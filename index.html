@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#7A3FC4" />
+
+    <title>Talkadoo — Kids learn a new language by jumping for it</title>
+    <meta
+      name="description"
+      content="Talkadoo is a movement-based language-learning game for children aged 4–7. Kids stand on a jump-mat connected to the TV, hear a word, and jump to the matching square. German, Spanish, Swedish and English. Free to join the waitlist — EU launch first."
+    />
+    <link rel="canonical" href="https://talkadoo.example/" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Talkadoo" />
+    <meta property="og:title" content="Kids learn a new language by jumping for it" />
+    <meta
+      property="og:description"
+      content="A movement-based language game for ages 4–7. Hear a word, jump to the square. German, Spanish, Swedish, English. Join the waitlist."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+
+    <!-- Fonts: rounded/playful display + friendly body. Fails gracefully to system fonts. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Structured data: Organization + Product + FAQPage. Keep FAQ in sync with the on-page FAQ. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://talkadoo.example/#org",
+            "name": "Talkadoo",
+            "description": "Early-stage EdTech startup building a movement-based way for young children to learn languages — off the screen, on their feet.",
+            "email": "talkadoo.team@gmail.com",
+            "foundingDate": "2024",
+            "founder": [
+              { "@type": "Person", "name": "Maira Haecker", "jobTitle": "Co-founder — pedagogy, product & design" },
+              { "@type": "Person", "name": "Ahmed Magdy Ali", "jobTitle": "Co-founder — technology & engineering" }
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "email": "talkadoo.team@gmail.com",
+              "contactType": "General enquiries"
+            }
+          },
+          {
+            "@type": "Product",
+            "@id": "https://talkadoo.example/#product",
+            "name": "Talkadoo",
+            "brand": { "@id": "https://talkadoo.example/#org" },
+            "description": "A movement-based language-learning game for children aged 4–7. Kids stand on a physical jump-mat connected to the TV, hear a word, and jump to the matching square.",
+            "category": "Educational game",
+            "audience": {
+              "@type": "PeopleAudience",
+              "suggestedMinAge": 4,
+              "suggestedMaxAge": 7
+            },
+            "inLanguage": ["de", "es", "sv", "en"],
+            "areaServed": "EU",
+            "offers": {
+              "@type": "Offer",
+              "availability": "https://schema.org/PreOrder",
+              "price": "0",
+              "priceCurrency": "EUR",
+              "areaServed": "EU"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://talkadoo.example/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is Talkadoo?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Talkadoo is a movement-based language-learning game for children aged 4–7. Your child stands on a physical jump-mat connected to the TV, hears a word, and jumps to the matching square — learning a new language by moving, not by staring at a screen."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which languages can my child learn?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "At launch, children can learn German, Spanish, Swedish or English."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What ages is Talkadoo for?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Talkadoo is designed for children aged 4 to 7 — the years when picking up a new language comes most naturally."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is this just more screen time?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Talkadoo gets children up and moving. The TV simply shows the game; the learning happens on their feet, on the mat — jumping, listening and playing."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "When does Talkadoo launch, and what does it cost?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "We are launching in the EU first. Joining the waitlist is free — add your email and you'll be first on the mat when we're ready."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

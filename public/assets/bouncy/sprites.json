@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "frameWidth": 256,
+        "frameHeight": 256,
+        "columns": 4,
+        "sheetWidth": 1024,
+        "sheetHeight": 1024,
+        "suggestedFps": 12,
+        "layout": "row-major: sx=(i%columns)*frameWidth, sy=floor(i/columns)*frameHeight",
+        "default": "idle",
+        "basePath": "assets/bouncy/",
+        "aliases": { "spin": "turn", "hop": "jump", "stomp": "jump", "slide": "walk", "trip": "sad", "recoil": "sad", "celebrate": "clap", "oops": "sad" },
+        "generated": "2026-06-21",
+        "_notes": "Bouncy sprite-sheet manifest read by avatar.js. Per animation: file, frames, columns, rows, loop, optional fps (falls back to meta.suggestedFps). loop:true loops gently forever; loop:false plays once then auto-returns to `default`. `aliases` map names the game asks for (e.g. spin) onto a sheet (turn). Add/remove an animation, or change a mapping, by editing this file only."
+    },
+    "animations": {
+        "idle":  { "file": "idle.png",  "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "sit":   { "file": "sit.png",   "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "sleep": { "file": "sleep.png", "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "walk":  { "file": "walk.png",  "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "run":   { "file": "run.png",   "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "dance": { "file": "dance.png", "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "clap":  { "file": "clap.png",  "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "cheer": { "file": "cheer.png", "frames": 13, "columns": 4, "rows": 4, "loop": true },
+        "wave":  { "file": "wave.png",  "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "jump":  { "file": "jump.png",  "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "turn":  { "file": "turn.png",  "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "stand": { "file": "stand.png", "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "stop":  { "file": "stop.png",  "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "touch": { "file": "touch.png", "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "see":   { "file": "see.png",   "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "drink": { "file": "drink.png", "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "sad":   { "file": "sad.png",   "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "wrong": { "file": "wrong.png", "frames": 13, "columns": 4, "rows": 4, "loop": false },
+        "point": { "file": "point.png", "frames": 13, "columns": 4, "rows": 4, "loop": false, "repeat": 3, "holdFrame": 5 }
+    }
+}
