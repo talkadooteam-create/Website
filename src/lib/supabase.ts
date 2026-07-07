@@ -47,7 +47,7 @@ export async function joinWaitlist(email: string): Promise<WaitlistResult> {
     if (error) {
       // Postgres unique-violation → already signed up. Treat as a friendly success.
       if (error.code === '23505') {
-        return { ok: false, reason: 'duplicate', message: 'You’re already on the list — see you on the mat! 🎉' }
+        return { ok: false, reason: 'duplicate', message: 'You’re already on the list, see you on the mat! 🎉' }
       }
       return { ok: false, reason: 'error', message: 'Something wobbled on our end. Please try again in a moment.' }
     }

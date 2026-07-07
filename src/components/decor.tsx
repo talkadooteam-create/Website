@@ -234,13 +234,12 @@ export function JumpSquares({
 }
 
 /**
- * A little jump-MAT — the real product: four coloured squares laid on the floor
- * that a child jumps between. Drawn in floor perspective with a soft base and one
- * glowing "active" square (a footprint marks where to land) so a parent instantly
- * reads it as the physical mat, not an abstract swatch.
+ * A little jump-MAT — the real product: a 3×3 grid of cream squares with purple
+ * grid lines, laid on the floor in perspective. One glowing "active" square (a
+ * footprint marks where to land) so a parent instantly reads it as the physical
+ * mat kids jump on. `lit` defaults to the centre square (like the real mat).
  */
-export function JumpMat({ lit = 2, size = 150 }: { lit?: number; size?: number }) {
-  const colors = ['#7A3FC4', '#E8912B', '#F58BA0', '#F5C542']
+export function JumpMat({ lit = 4, size = 150 }: { lit?: number; size?: number }) {
   return (
     <div aria-hidden="true" style={{ width: size, perspective: size * 2.6, flex: '0 0 auto' }}>
       <div
@@ -257,44 +256,45 @@ export function JumpMat({ lit = 2, size = 150 }: { lit?: number; size?: number }
         <div
           style={{
             position: 'absolute',
-            inset: '-8%',
-            borderRadius: size * 0.14,
+            inset: '-6%',
+            borderRadius: size * 0.1,
             background: 'linear-gradient(180deg, #fffdf8, #efe7d4)',
             boxShadow: '0 18px 30px -10px rgba(43,43,51,0.35)',
-            border: '2px solid #2b2b3312',
+            border: `2px solid ${'#7A3FC4'}44`,
           }}
         />
-        {/* 2×2 grid of jump squares */}
+        {/* 3×3 grid of jump squares */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridTemplateRows: '1fr 1fr',
-            gap: size * 0.08,
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateRows: 'repeat(3, 1fr)',
+            gap: size * 0.045,
             padding: size * 0.06,
           }}
         >
-          {colors.map((c, i) => {
+          {Array.from({ length: 9 }).map((_, i) => {
             const isLit = i === lit
             return (
               <div
                 key={i}
                 style={{
-                  borderRadius: size * 0.1,
-                  background: isLit ? c : `${c}cc`,
+                  borderRadius: size * 0.055,
+                  background: isLit ? '#e7dcf7' : '#f6efe0',
+                  border: isLit ? '2px solid #7A3FC4' : '2px solid #cdbfe0',
                   boxShadow: isLit
-                    ? `0 0 0 3px #fff, 0 0 20px 5px ${c}, inset 0 -5px 0 rgba(0,0,0,0.14)`
-                    : 'inset 0 -5px 0 rgba(0,0,0,0.14)',
-                  transform: isLit ? 'translateZ(16px)' : undefined,
+                    ? '0 0 14px 3px rgba(122,63,196,0.4), inset 0 -3px 0 rgba(0,0,0,0.08)'
+                    : 'inset 0 -3px 0 rgba(0,0,0,0.06)',
+                  transform: isLit ? 'translateZ(14px)' : undefined,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 {isLit && (
-                  <span style={{ fontSize: size * 0.22, transform: 'rotateX(-52deg)', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.3))' }}>
+                  <span style={{ fontSize: size * 0.16, transform: 'rotateX(-52deg)', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.3))' }}>
                     👣
                   </span>
                 )}

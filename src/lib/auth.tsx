@@ -93,7 +93,7 @@ export function useAuth() {
 
 function humanize(msg: string): string {
   const m = msg.toLowerCase()
-  if (m.includes('already registered')) return 'That email already has an account — try logging in.'
+  if (m.includes('already registered')) return 'That email already has an account. Try logging in.'
   if (m.includes('invalid login')) return 'Email or password doesn’t match. Please try again.'
   if (m.includes('password')) return 'Password must be at least 6 characters.'
   return msg

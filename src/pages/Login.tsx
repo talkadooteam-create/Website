@@ -59,7 +59,7 @@ export default function Login() {
             fontSize: '0.9rem',
           }}
         >
-          Accounts aren’t connected yet — add your Supabase keys to <code>.env.local</code>.
+          Accounts aren’t connected yet. Add your Supabase keys to <code>.env.local</code>.
         </div>
       )}
 

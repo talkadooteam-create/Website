@@ -38,7 +38,7 @@ export default function ProgressPanel({ childId }: { childId: string }) {
   if (empty) {
     return (
       <p style={{ opacity: 0.7, fontSize: '0.9rem', margin: 0, background: '#faf6ee', borderRadius: 12, padding: '0.9rem' }}>
-        No words yet — once your child starts playing on the mat, the words they meet will appear here as{' '}
+        No words yet. Once your child starts playing on the mat, the words they meet will appear here as{' '}
         <strong>New</strong>, <strong>Learning</strong> and <strong>Learned</strong>.
       </p>
     )

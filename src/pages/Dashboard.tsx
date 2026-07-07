@@ -15,8 +15,8 @@ import {
   type ChildInput,
 } from '../lib/account'
 
-const ageLabel = (v: string | null) => AGE_BANDS.find((a) => a.value === v)?.label ?? '—'
-const langLabel = (v: string | null) => TARGET_LANGUAGES.find((l) => l.value === v)?.label ?? '—'
+const ageLabel = (v: string | null) => AGE_BANDS.find((a) => a.value === v)?.label ?? 'not set'
+const langLabel = (v: string | null) => TARGET_LANGUAGES.find((l) => l.value === v)?.label ?? 'not set'
 
 export default function Dashboard() {
   const [children, setChildren] = useState<Child[]>([])

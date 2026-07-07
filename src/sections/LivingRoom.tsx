@@ -2,14 +2,20 @@ import { useReveal } from '../hooks/useReveal'
 import { Star, Dot } from '../components/decor'
 
 const SPECS = [
-  { emoji: '📺', title: 'Plugs into any TV', body: 'The mat connects to your telly — the whole game plays on the big screen.' },
+  { emoji: '📺', title: 'Plugs into any TV', body: 'The mat connects to your telly, and the whole game plays on the big screen.' },
   { emoji: '📐', title: '96 × 96 cm', body: 'A nine-square play grid that fits neatly into any living room.' },
-  { emoji: '🪶', title: '10 mm thin', body: 'Light and low-profile — roll it away in seconds when playtime’s over.' },
+  { emoji: '🪶', title: '10 mm thin', body: 'Light and low-profile, so it rolls away in seconds when playtime’s over.' },
   { emoji: '🧼', title: 'Wipe-clean', body: 'Built for real family life: sturdy, soft underfoot and easy to clean.' },
 ]
 
 export default function LivingRoom() {
   const ref = useReveal<HTMLElement>()
+
+  // Play the real in-game voice clip ("Find the cat!") — a taste of what a child hears.
+  function playCat() {
+    const audio = new Audio('./audio/findthe_cat.mp3')
+    audio.play().catch(() => {})
+  }
 
   return (
     <section
@@ -50,7 +56,7 @@ export default function LivingRoom() {
             overflow: 'hidden',
             boxShadow: 'var(--shadow-pop)',
             border: '5px solid #fff',
-            aspectRatio: '1440 / 1160',
+            aspectRatio: '1402 / 1122',
           }}
         >
           <img
@@ -61,26 +67,30 @@ export default function LivingRoom() {
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
 
-          {/* callout: near the TV */}
-          <span
-            aria-hidden="true"
-            className="anim-bob"
+          {/* callout: near the TV — tap to actually hear the in-game voice */}
+          <button
+            type="button"
+            onClick={playCat}
+            className="anim-bob squish"
+            aria-label="Play the voice clip: Find the cat!"
             style={{
               position: 'absolute',
               top: '9%',
               left: '4%',
+              border: 'none',
+              cursor: 'pointer',
               background: '#fff',
               color: 'var(--color-purple)',
               fontFamily: 'var(--font-display)',
               fontWeight: 700,
               fontSize: 'clamp(0.72rem, 2.2vw, 1rem)',
-              padding: '0.4rem 0.8rem',
+              padding: '0.45rem 0.85rem',
               borderRadius: 999,
               boxShadow: 'var(--shadow-soft)',
             }}
           >
             🔊 “Find the cat!”
-          </span>
+          </button>
 
           {/* callout: near the mat */}
           <span

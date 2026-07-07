@@ -14,13 +14,13 @@ const FOUNDERS: Founder[] = [
     name: 'Maira Haecker',
     role: 'Co-founder · pedagogy, product & design',
     linkedin: 'https://www.linkedin.com/in/mairahaecker1502',
-    bio: 'Maira grew up with a single mother determined to raise her across five languages — and saw first-hand how much work that took, for parent and child alike. Later, as an international student, she kept meeting the same struggle everywhere: learning a language the hard way, at a desk. She became convinced kids learn best the way they play — moving, laughing, exploring — not sitting still in front of a screen. The idea for Talkadoo began during her bachelor studies with friends, and she went on to pursue it full-time during her entrepreneurship master’s.',
+    bio: 'Maira grew up with a single mother determined to raise her across five languages, and saw first-hand how much work that took, for parent and child alike. Later, as an international student, she kept meeting the same struggle everywhere: learning a language the hard way, at a desk. She became convinced kids learn best the way they play: moving, laughing, exploring, not sitting still in front of a screen. The idea for Talkadoo began during her bachelor studies with friends, and she went on to pursue it full-time during her entrepreneurship master’s.',
   },
   {
     name: 'Ahmed Magdy Ali (“Ali”)',
     role: 'Co-founder · technology & engineering · based in Sweden',
     linkedin: 'https://www.linkedin.com/in/ali-a-a9812595/',
-    bio: 'Ali joined Maira in the entrepreneurship master’s program, where the two started working together — and it clicked immediately. He speaks many languages and has taught them to others, so he understands first-hand the struggle Talkadoo is built to solve. He fell for the idea and its potential, fully committed, and today drives the project forward — leading the technology and building the game alongside Maira.',
+    bio: 'Ali joined Maira in the entrepreneurship master’s program, where the two started working together, and it clicked immediately. He speaks many languages and has taught them to others, so he understands first-hand the struggle Talkadoo is built to solve. He fell for the idea and its potential, fully committed, and today drives the project forward, leading the technology and building the game alongside Maira.',
   },
 ]
 
@@ -147,7 +147,7 @@ export default function Founders() {
                       padding: '0.3rem 0.7rem',
                     }}
                   >
-                    LinkedIn URL — to add
+                    LinkedIn URL to add
                   </span>
                 )}
               </div>
@@ -170,7 +170,7 @@ export default function Founders() {
           <h3 style={{ fontSize: '1.4rem', marginBottom: '0.6rem' }}>Come say hello</h3>
           <p style={{ maxWidth: 560, margin: '0 auto 1.3rem', opacity: 0.88 }}>
             Whether you’re a parent, a language or pedagogy expert, or someone who
-            wants to help make Talkadoo real — we’d love to hear from you.
+            wants to help make Talkadoo real, we’d love to hear from you.
           </p>
           <a
             href="mailto:talkadoo.team@gmail.com"

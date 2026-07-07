@@ -146,7 +146,6 @@ export default function LanguagePeaks({
                       alt=""
                       style={{
                         borderRadius: 4,
-                        boxShadow: '0 3px 6px rgba(0,0,0,0.28)',
                         width: 'clamp(22px, 5.5vw, 34px)',
                         height: 'auto',
                       }}

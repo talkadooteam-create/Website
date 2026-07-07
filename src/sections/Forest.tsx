@@ -11,7 +11,7 @@ const PROPS = [
   },
   {
     title: 'Built by an educator',
-    body: 'Designed around how young children actually learn — grounded in pedagogy, tested with real families.',
+    body: 'Designed around how young children actually learn, grounded in pedagogy and tested with real families.',
     emoji: '🎓',
     color: 'var(--color-purple)',
   },

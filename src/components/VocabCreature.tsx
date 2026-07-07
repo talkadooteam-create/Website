@@ -18,7 +18,7 @@ export default function VocabCreature({ word, lang }: { word: Word; lang: Lang }
     timer.current = window.setTimeout(() => setSaying(false), 2000)
   }
 
-  const label = `${word.key} — ${article ? article + ' ' : ''}${text}. Tap to hear it.`
+  const label = `${word.key}: ${article ? article + ' ' : ''}${text}. Tap to hear it.`
 
   return (
     <button

@@ -167,7 +167,7 @@ export default function Shore({ onSuccess }: { onSuccess: () => void }) {
             style={{ fontSize: '1.15rem', margin: '1rem 0 1.5rem', maxWidth: 520 }}
           >
             A playful jump-mat for ages 4–7. Your child hears a word, then jumps to
-            the matching square — moving, laughing and learning, right off the screen.
+            the matching square, moving, laughing and learning, right off the screen.
           </p>
           <div data-reveal>
             <WaitlistForm variant="hero" onSuccess={onSuccess} />
@@ -177,7 +177,7 @@ export default function Shore({ onSuccess }: { onSuccess: () => void }) {
             data-reveal
             style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}
           >
-            <JumpMat lit={2} />
+            <JumpMat />
             <p style={{ fontSize: '0.85rem', opacity: 0.7, margin: 0, maxWidth: 180 }}>
               Hear a word → jump to the right square. That’s the whole game.
             </p>

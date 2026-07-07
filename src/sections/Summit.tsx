@@ -48,7 +48,7 @@ export default function Summit({ onCelebrate }: { onCelebrate: () => void }) {
         </h2>
         <p data-reveal style={{ fontSize: '1.15rem', opacity: 0.85, margin: '0.8rem auto 1.8rem', maxWidth: 480 }}>
           Join the waitlist and we’ll let you know the moment Talkadoo is ready to
-          play. Free to join, EU launch first — and absolutely no spam.
+          play. Free to join, EU launch first, and absolutely no spam.
         </p>
 
         <div data-reveal style={{ display: 'flex', justifyContent: 'center' }}>

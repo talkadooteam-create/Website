@@ -8,7 +8,7 @@ const STEPS = [
   {
     n: 1,
     title: 'Connect the mat',
-    body: 'Plug the Talkadoo mat into your TV. That’s the whole setup — no app store maze, no fiddling.',
+    body: 'Plug the Talkadoo mat into your TV. That’s the whole setup, no app store maze, no fiddling.',
     color: 'var(--color-orange)',
     emoji: '🔌',
   },
@@ -22,7 +22,7 @@ const STEPS = [
   {
     n: 3,
     title: 'Words that stick',
-    body: 'Because they moved to learn it, the word sticks — playful repetition, real progress.',
+    body: 'Because they moved to learn it, the word sticks, through playful repetition and real progress.',
     color: 'var(--color-pink)',
     emoji: '✨',
   },
@@ -131,7 +131,7 @@ export default function Meadow({
         {/* The living meadow — tappable vocabulary */}
         <div data-reveal style={{ textAlign: 'center' }}>
           <p style={{ fontWeight: 700, fontFamily: 'var(--font-display)', fontSize: '1.15rem', margin: '0 0 0.3rem' }}>
-            Meet the first words — tap one to hear it
+            Meet the first words, tap one to hear it
           </p>
           <p style={{ opacity: 0.7, margin: '0 0 1.2rem' }}>
             A taste from a few categories, each word with its real article. Pick a language:

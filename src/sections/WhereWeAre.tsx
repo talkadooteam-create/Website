@@ -1,5 +1,5 @@
-import Bouncy from '../components/Bouncy'
 import { useReveal } from '../hooks/useReveal'
+import { Star } from '../components/decor'
 
 const TIMELINE = [
   { label: 'The idea', sub: 'Born in our bachelor studies', done: true },
@@ -39,8 +39,8 @@ export default function WhereWeAre() {
           }}
         >
           {[
-            'We’re an early-stage EdTech startup building a movement-based way for young children to learn languages — off the screen, on their feet.',
-            'We’ve secured our initial funding to build and test our MVP, and we’re now developing our second MVP, moving toward production research for the physical product. Want the detail? Get in touch — we’d love to talk.',
+            'We’re an early-stage EdTech startup building a movement-based way for young children to learn languages, off the screen and on their feet.',
+            'We’ve secured our initial funding to build and test our MVP, and we’re now developing our second MVP, moving toward production research for the physical product. Want the detail? Get in touch, we’d love to talk.',
             'Our approach: keep testing with real parents and children, and work with pedagogy and language experts, so kids genuinely have fun and genuinely learn.',
           ].map((t, i) => (
             <p
@@ -59,24 +59,12 @@ export default function WhereWeAre() {
           ))}
         </div>
 
-        {/* Timeline — Bouncy walks along it */}
+        {/* Timeline of the journey so far */}
         <h3 data-reveal style={{ textAlign: 'center', fontSize: '1.2rem', opacity: 0.75, marginBottom: '1.5rem' }}>
           The story so far
         </h3>
         <div data-reveal style={{ overflowX: 'auto', paddingBottom: '0.5rem' }}>
           <div style={{ minWidth: 640, position: 'relative', padding: '0 1rem' }}>
-            {/* Bouncy above the current step */}
-            <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                top: -66,
-                left: `calc(${((currentIdx + 0.5) / TIMELINE.length) * 100}% - 40px)`,
-              }}
-            >
-              <Bouncy state="walk" size={80} />
-            </div>
-
             {/* the path line */}
             <div style={{ position: 'absolute', top: 12, left: '4%', right: '4%', height: 5, background: '#e3d9c2', borderRadius: 3 }} />
             <div
@@ -94,19 +82,42 @@ export default function WhereWeAre() {
             <ol style={{ listStyle: 'none', display: 'grid', gridTemplateColumns: `repeat(${TIMELINE.length}, 1fr)`, padding: 0, margin: 0 }}>
               {TIMELINE.map((t) => (
                 <li key={t.label} style={{ textAlign: 'center', position: 'relative', padding: '0 0.3rem' }}>
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      display: 'block',
-                      width: t.current ? 28 : 22,
-                      height: t.current ? 28 : 22,
-                      margin: '0 auto 0.6rem',
-                      borderRadius: '50%',
-                      background: t.current ? 'var(--color-purple)' : t.done ? 'var(--color-orange)' : '#fff',
-                      border: t.done || t.current ? 'none' : '3px solid #d8cdb4',
-                      boxShadow: t.current ? '0 0 0 5px #7a3fc433' : 'none',
-                    }}
-                  />
+                  {t.current ? (
+                    // The "we are here" node shines like a star.
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 34,
+                        height: 34,
+                        margin: '-3px auto 0.6rem',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, #fff3c9 0%, #fff3c900 70%)',
+                      }}
+                    >
+                      <Star
+                        size={30}
+                        color="var(--color-gold)"
+                        className="anim-twinkle"
+                        style={{ filter: 'drop-shadow(0 0 6px #f5c542)' }}
+                      />
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: 'block',
+                        width: 22,
+                        height: 22,
+                        margin: '0 auto 0.6rem',
+                        borderRadius: '50%',
+                        background: t.done ? 'var(--color-orange)' : '#fff',
+                        border: t.done ? 'none' : '3px solid #d8cdb4',
+                      }}
+                    />
+                  )}
                   <strong style={{ display: 'block', fontFamily: 'var(--font-display)', fontSize: '0.95rem', color: t.current ? 'var(--color-purple)' : 'var(--color-ink)' }}>
                     {t.label}
                   </strong>
