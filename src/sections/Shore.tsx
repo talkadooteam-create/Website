@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Bouncy from '../components/Bouncy'
 import WaitlistForm from '../components/WaitlistForm'
 import { JumpSquares, Star, Dot } from '../components/decor'
@@ -98,22 +99,36 @@ export default function Shore({
         >
           Talkadoo
         </span>
-        <a
-          href="#summit"
-          className="squish"
-          style={{
-            background: 'var(--color-gold)',
-            color: 'var(--color-ink)',
-            fontWeight: 800,
-            fontFamily: 'var(--font-display)',
-            padding: '0.55rem 1.1rem',
-            borderRadius: 999,
-            textDecoration: 'none',
-            fontSize: '0.95rem',
-          }}
-        >
-          Join the waitlist
-        </a>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+          <Link
+            to="/login"
+            style={{
+              color: 'var(--color-ink)',
+              fontWeight: 700,
+              fontFamily: 'var(--font-display)',
+              textDecoration: 'none',
+              fontSize: '0.95rem',
+            }}
+          >
+            Log in
+          </Link>
+          <a
+            href="#summit"
+            className="squish"
+            style={{
+              background: 'var(--color-gold)',
+              color: 'var(--color-ink)',
+              fontWeight: 800,
+              fontFamily: 'var(--font-display)',
+              padding: '0.55rem 1.1rem',
+              borderRadius: 999,
+              textDecoration: 'none',
+              fontSize: '0.95rem',
+            }}
+          >
+            Join the waitlist
+          </a>
+        </nav>
       </header>
 
       {/* Hero content */}

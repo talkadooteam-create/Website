@@ -1,66 +1,50 @@
-import { Suspense, lazy, useCallback, useState } from 'react'
-import Shore from './sections/Shore'
-import Meadow from './sections/Meadow'
-import { celebrate } from './lib/confetti'
-import type { Lang } from './data/vocab'
+import { lazy, Suspense, type ReactNode } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './lib/auth'
+import Landing from './pages/Landing'
 
-// Later regions are lazy-loaded so the hero paints fast on 4G.
-const Forest = lazy(() => import('./sections/Forest'))
-const LanguagePeaks = lazy(() => import('./sections/LanguagePeaks'))
-const Summit = lazy(() => import('./sections/Summit'))
-const WhereWeAre = lazy(() => import('./sections/WhereWeAre'))
-const Founders = lazy(() => import('./sections/Founders'))
+// Account area is lazy-loaded — it never weighs on the public landing page.
+const Login = lazy(() => import('./pages/Login'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const LinkDevice = lazy(() => import('./pages/LinkDevice'))
 
-const Loading = () => (
-  <div style={{ minHeight: 220, display: 'grid', placeItems: 'center', opacity: 0.5 }}>
-    <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>loading…</span>
-  </div>
-)
+function FullPageLoader() {
+  return (
+    <div style={{ minHeight: '100svh', display: 'grid', placeItems: 'center', background: 'var(--color-cream)' }}>
+      <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, opacity: 0.6 }}>loading…</span>
+    </div>
+  )
+}
+
+/** Gate for parent-only pages: waits for the session, then redirects if signed out. */
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <FullPageLoader />
+  if (!user) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
 
 export default function App() {
-  const [lang, setLang] = useState<Lang | null>(null)
-
-  const handleCelebrate = useCallback(() => {
-    celebrate({ x: window.innerWidth / 2, y: window.innerHeight / 3 })
-  }, [])
-
   return (
-    <>
-      <a href="#summit" className="skip-link">
-        Skip to the waitlist
-      </a>
-
-      <main>
-        <Shore lang={lang} onSuccess={handleCelebrate} />
-        <Meadow lang={lang} setLang={setLang} />
-        <Suspense fallback={<Loading />}>
-          <Forest />
-          <LanguagePeaks lang={lang} setLang={setLang} />
-          <Summit lang={lang} onCelebrate={handleCelebrate} />
-          <WhereWeAre />
-          <Founders />
+    <AuthProvider>
+      <BrowserRouter>
+        <Suspense fallback={<FullPageLoader />}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/link" element={<LinkDevice />} />
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </Suspense>
-      </main>
-
-      <footer
-        style={{
-          background: 'var(--color-ink)',
-          color: '#f5efe0',
-          textAlign: 'center',
-          padding: '2.5rem 1.2rem',
-        }}
-      >
-        <p style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.4rem', color: 'var(--color-gold)', margin: '0 0 0.4rem' }}>
-          Talkadoo
-        </p>
-        <p style={{ margin: '0 0 0.8rem', opacity: 0.8 }}>Let’s move, learn and have fun!</p>
-        <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.65 }}>
-          <a href="mailto:talkadoo.team@gmail.com" style={{ color: '#f5efe0' }}>
-            talkadoo.team@gmail.com
-          </a>{' '}
-          · Made with care in the EU 🇪🇺
-        </p>
-      </footer>
-    </>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

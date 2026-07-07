@@ -3,28 +3,29 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 
-/** True once real EU Supabase credentials are present in .env.local. */
-export const isWaitlistConnected = Boolean(url && anonKey)
+/** True once real Supabase credentials are present in .env.local. */
+export const isSupabaseConfigured = Boolean(url && anonKey)
 
-let client: SupabaseClient | null = null
-if (isWaitlistConnected) {
-  client = createClient(url!, anonKey!)
-}
+/** Shared browser client (null until credentials are set). Persists the parent session. */
+export const supabase: SupabaseClient | null = isSupabaseConfigured
+  ? createClient(url!, anonKey!, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    })
+  : null
+
+// Kept for the existing waitlist form.
+export const isWaitlistConnected = isSupabaseConfigured
 
 export type WaitlistResult =
   | { ok: true }
   | { ok: false; reason: 'not-connected' | 'duplicate' | 'error'; message: string }
 
 /**
- * Add an email to the Talkadoo waitlist.
- * Real Supabase insert — no front-end stub. When credentials are absent it
- * returns `not-connected` so the UI can tell the truth rather than fake success.
+ * Add an email to the Talkadoo waitlist. Real Supabase insert — no front-end stub.
+ * When credentials are absent it returns `not-connected` so the UI tells the truth.
  */
-export async function joinWaitlist(
-  email: string,
-  locale?: string,
-): Promise<WaitlistResult> {
-  if (!client) {
+export async function joinWaitlist(email: string, locale?: string): Promise<WaitlistResult> {
+  if (!supabase) {
     return {
       ok: false,
       reason: 'not-connected',
@@ -33,12 +34,11 @@ export async function joinWaitlist(
     }
   }
 
-  const { error } = await client
+  const { error } = await supabase
     .from('waitlist')
     .insert({ email: email.trim().toLowerCase(), locale: locale ?? null, source: 'website' })
 
   if (error) {
-    // Postgres unique-violation → they're already on the list; treat as success-ish.
     if (error.code === '23505') {
       return { ok: false, reason: 'duplicate', message: 'You’re already on the list — see you on the mat!' }
     }

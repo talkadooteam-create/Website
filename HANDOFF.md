@@ -92,3 +92,49 @@ brief, Bouncy's tagline ("Let's move, learn and have fun!"), and that game subti
 Bouncy sprites, animal art (dog/cat/bird/horse/frog/cow/fish/duck) and flags were
 copied from `Talkadoo-data-main` into `public/assets/`. If you have storybook
 background illustrations, they'd elevate the regions — tell me and I'll wire slots.
+
+---
+
+## Parent accounts & child setup (connected to your real Supabase)
+
+Routes (client-side, `react-router-dom`): `/login`, `/dashboard` (parent-only),
+`/link`. Deep links work on static hosts via `vercel.json` + `public/_redirects`.
+
+- **Auth** (`src/lib/auth.tsx`): email + password via Supabase Auth. Your project has
+  email auto-confirm ON, so signup lands straight on the dashboard.
+- **Consent** (`src/lib/account.ts` → `recordConsent`): sign-up shows a non-pre-ticked
+  GDPR checkbox; on consent we insert a row into `consents` (`version` =
+  `CONSENT_VERSION`). Bump that constant if you change the wording.
+- **Child profiles** (`Dashboard` + `ChildForm`): create / edit / delete, stored in
+  `children`. Fields collected: `nickname`, `age_band` (`4-5`/`5-6`/`6-7`), `target`
+  (learning language), `avatar` (emoji). `parent_id` is filled by the DB default
+  (`auth.uid()`); `children.id` is app-generated client-side (the table has no default).
+- **Progress** (`ProgressPanel`): reads `learning_events`, takes each word's latest
+  `word_state`, groups words by `category` into New / Learning / Learned.
+
+### Verified against your live database
+Signup → the `handle_new_parent` trigger auto-creates the `parents` row → consent
+insert (201) → child create (201, `parent_id` auto) → read back (RLS-scoped) →
+delete (204). UI flow tested too. **All required columns already existed — nothing
+was invented, nothing is missing.** Two notes:
+- The **learning language is stored in `target`**. The table also has `l1` (the
+  child's home/first language), which I deliberately left null to keep data minimal.
+  Want a "home language" dropdown too? Say so and I'll add it.
+- `research_events` is (correctly) not readable by the anon/parent role — not needed here.
+
+### ⚠️ One cleanup for you
+Testing created a Supabase **Auth user `talkadooqa+137@gmail.com`** (I deleted its test
+child, but the auth user + its `parents`/`consents` rows can only be removed with the
+service role). Delete that user in **Supabase → Authentication → Users**; it cascades
+and removes the leftover rows.
+
+## Stubs wired to activate later (one-line changes)
+
+- **Games** (`src/lib/games.ts` → `getGames()`): returns `[]` today → the dashboard
+  shows "Games coming soon". Point `getGames()` at a future `games` table and the UI
+  lights up unchanged. A code comment marks exactly where the per-game `published`
+  flag + per-user admin check will go (not built yet, per your instruction).
+- **Device linking** (`src/lib/devices.ts` → `linkDevice()`): `/link` collects a code
+  (typed, or pre-filled from `?code=XXXX` for future QR), and calls `linkDevice()`,
+  which currently returns a friendly "coming soon" and writes nothing. Implement just
+  that one function later to go live; the page UI needs no changes.
