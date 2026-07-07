@@ -49,9 +49,9 @@ SEO: real HTML text + JSON-LD (Organization + Product + FAQPage) in `index.html`
    Until then the form is fully working but honestly reports "not connected yet" —
    it never fakes success. The insert code is real (`src/lib/supabase.ts`).
 
-2. **Founder photos.** Drop `founder-maira.jpg` and `founder-ali.jpg` into
-   `public/`. Right now each shows an obvious dashed "Add photo" slot. (You still
-   need to source a photo of Ali.)
+2. **Founders photo.** Drop one shared **`founders-together.jpg`** (photo of both
+   founders together) into `public/`. Until then the section shows a clean labelled
+   placeholder frame. (The old per-founder monogram avatars were removed.)
 
 3. **LinkedIn URLs.** Both are placeholders showing a dashed "LinkedIn URL — to
    add" chip. Set the `linkedin` fields in `src/sections/Founders.tsx`.

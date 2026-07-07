@@ -232,3 +232,77 @@ export function JumpSquares({
     </div>
   )
 }
+
+/**
+ * A little jump-MAT — the real product: four coloured squares laid on the floor
+ * that a child jumps between. Drawn in floor perspective with a soft base and one
+ * glowing "active" square (a footprint marks where to land) so a parent instantly
+ * reads it as the physical mat, not an abstract swatch.
+ */
+export function JumpMat({ lit = 2, size = 150 }: { lit?: number; size?: number }) {
+  const colors = ['#7A3FC4', '#E8912B', '#F58BA0', '#F5C542']
+  return (
+    <div aria-hidden="true" style={{ width: size, perspective: size * 2.6, flex: '0 0 auto' }}>
+      <div
+        style={{
+          position: 'relative',
+          transform: 'rotateX(52deg) rotate(-2deg)',
+          transformStyle: 'preserve-3d',
+          margin: '0 auto',
+          width: size,
+          height: size,
+        }}
+      >
+        {/* soft mat base under the squares */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: '-8%',
+            borderRadius: size * 0.14,
+            background: 'linear-gradient(180deg, #fffdf8, #efe7d4)',
+            boxShadow: '0 18px 30px -10px rgba(43,43,51,0.35)',
+            border: '2px solid #2b2b3312',
+          }}
+        />
+        {/* 2×2 grid of jump squares */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridTemplateRows: '1fr 1fr',
+            gap: size * 0.08,
+            padding: size * 0.06,
+          }}
+        >
+          {colors.map((c, i) => {
+            const isLit = i === lit
+            return (
+              <div
+                key={i}
+                style={{
+                  borderRadius: size * 0.1,
+                  background: isLit ? c : `${c}cc`,
+                  boxShadow: isLit
+                    ? `0 0 0 3px #fff, 0 0 20px 5px ${c}, inset 0 -5px 0 rgba(0,0,0,0.14)`
+                    : 'inset 0 -5px 0 rgba(0,0,0,0.14)',
+                  transform: isLit ? 'translateZ(16px)' : undefined,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {isLit && (
+                  <span style={{ fontSize: size * 0.22, transform: 'rotateX(-52deg)', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.3))' }}>
+                    👣
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}

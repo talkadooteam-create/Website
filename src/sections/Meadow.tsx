@@ -2,7 +2,7 @@ import Bouncy from '../components/Bouncy'
 import VocabCreature from '../components/VocabCreature'
 import { useReveal } from '../hooks/useReveal'
 import { Squiggle } from '../components/decor'
-import { CREATURES, LANGUAGES, type Lang } from '../data/vocab'
+import { CATEGORIES, LANGUAGES, type Lang } from '../data/vocab'
 
 const STEPS = [
   {
@@ -131,10 +131,10 @@ export default function Meadow({
         {/* The living meadow — tappable vocabulary */}
         <div data-reveal style={{ textAlign: 'center' }}>
           <p style={{ fontWeight: 700, fontFamily: 'var(--font-display)', fontSize: '1.15rem', margin: '0 0 0.3rem' }}>
-            Meet the first words — tap a friend to hear it
+            Meet the first words — tap one to hear it
           </p>
           <p style={{ opacity: 0.7, margin: '0 0 1.2rem' }}>
-            The real game teaches each word with its article. Pick a language:
+            A taste from a few categories, each word with its real article. Pick a language:
           </p>
 
           {/* Language switch for the meadow */}
@@ -172,20 +172,51 @@ export default function Meadow({
             })}
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))',
-              gap: '0.6rem',
-              maxWidth: 760,
-              margin: '0 auto',
-              justifyItems: 'center',
-            }}
-          >
-            {CREATURES.map((c) => (
-              <VocabCreature key={c.key} creature={c} lang={activeLang} />
+          {/* A small taste per category — real game images, 2–4 words each */}
+          <div style={{ display: 'grid', gap: '1rem', maxWidth: 880, margin: '0 auto' }}>
+            {CATEGORIES.map((cat) => (
+              <div
+                key={cat.key}
+                style={{
+                  background: '#ffffffcc',
+                  borderRadius: 22,
+                  padding: '1rem 0.8rem 1.2rem',
+                  boxShadow: '0 8px 24px -18px rgba(43,43,51,0.4)',
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    margin: '0 0 0.6rem',
+                    color: 'var(--color-ink)',
+                  }}
+                >
+                  <span aria-hidden="true" style={{ marginRight: '0.35rem' }}>
+                    {cat.emoji}
+                  </span>
+                  {cat.label}
+                </p>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${cat.words.length}, minmax(0, 1fr))`,
+                    gap: '0.4rem',
+                    justifyItems: 'center',
+                  }}
+                >
+                  {cat.words.map((w) => (
+                    <VocabCreature key={w.key} word={w} lang={activeLang} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
+
+          <p style={{ opacity: 0.6, fontSize: '0.9rem', fontStyle: 'italic', margin: '1.2rem 0 0' }}>
+            …and more words and categories as we grow.
+          </p>
         </div>
 
         {/* Bouncy waddles through the grass */}

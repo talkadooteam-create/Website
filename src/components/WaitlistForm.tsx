@@ -1,33 +1,32 @@
 import { useId, useState } from 'react'
-import { joinWaitlist, isWaitlistConnected } from '../lib/supabase'
-import type { Lang } from '../data/vocab'
+import { joinWaitlist } from '../lib/supabase'
 
 type Status = 'idle' | 'saving' | 'done' | 'dupe' | 'unconnected' | 'error'
 
 interface Props {
-  locale?: Lang | null
   variant?: 'hero' | 'full'
   onSuccess?: () => void
 }
 
 /**
- * The reliable spine: a plain semantic form that submits to Supabase.
- * Works with the keyboard, announces status via aria-live, and never fakes
- * success — if the backend isn't wired yet it says so plainly.
+ * The waitlist form: a plain semantic form that inserts { email } into Supabase.
+ * Works with the keyboard, announces status via aria-live, and handles invalid
+ * emails, duplicates and network failures with friendly messages.
  */
-export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Props) {
+export default function WaitlistForm({ variant = 'full', onSuccess }: Props) {
   const id = useId()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [message, setMessage] = useState('')
 
   const done = status === 'done' || status === 'dupe'
+  const isRow = variant === 'hero'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (status === 'saving' || done) return
     setStatus('saving')
-    const res = await joinWaitlist(email, locale ?? undefined)
+    const res = await joinWaitlist(email)
     if (res.ok) {
       setStatus('done')
       setMessage('You’re on the mat! We’ll be in touch before launch. 🎉')
@@ -40,6 +39,7 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
       setStatus('unconnected')
       setMessage(res.message)
     } else {
+      // invalid email or network/server error
       setStatus('error')
       setMessage(res.message)
     }
@@ -71,10 +71,10 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
       noValidate
       style={{
         display: 'flex',
-        flexDirection: variant === 'hero' ? 'row' : 'column',
+        flexDirection: isRow ? 'row' : 'column',
         flexWrap: 'wrap',
         gap: '0.6rem',
-        maxWidth: variant === 'hero' ? 520 : 440,
+        maxWidth: isRow ? 520 : 440,
         width: '100%',
       }}
     >
@@ -92,7 +92,11 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         style={{
-          flex: '1 1 220px',
+          // In the row (hero) layout the input grows to fill; in the column (full)
+          // layout it must NOT flex-grow, or flex-basis becomes its height → a giant
+          // pill/circle. Keep it a normal-height pill in both.
+          flex: isRow ? '1 1 220px' : '0 0 auto',
+          width: isRow ? undefined : '100%',
           minWidth: 0,
           padding: '0.9rem 1.1rem',
           borderRadius: 999,
@@ -107,7 +111,8 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
         disabled={status === 'saving'}
         className="squish"
         style={{
-          flex: variant === 'hero' ? '0 0 auto' : '1 1 auto',
+          flex: '0 0 auto',
+          width: isRow ? undefined : '100%',
           padding: '0.9rem 1.6rem',
           borderRadius: 999,
           border: 'none',
@@ -129,9 +134,7 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
       </p>
 
       <div role="status" aria-live="polite" style={{ flexBasis: '100%', minHeight: 4 }}>
-        {status === 'error' && (
-          <p style={{ color: '#b23a48', fontWeight: 700, margin: 0 }}>{message}</p>
-        )}
+        {status === 'error' && <p style={{ color: '#b23a48', fontWeight: 700, margin: 0 }}>{message}</p>}
         {status === 'unconnected' && (
           <p
             style={{
@@ -144,16 +147,10 @@ export default function WaitlistForm({ locale, variant = 'full', onSuccess }: Pr
               margin: '0.3rem 0 0',
             }}
           >
-            <strong>Not connected yet.</strong> {message}
+            {message}
           </p>
         )}
       </div>
-
-      {import.meta.env.DEV && !isWaitlistConnected && status === 'idle' && (
-        <p style={{ flexBasis: '100%', fontSize: '0.72rem', opacity: 0.5, margin: 0 }}>
-          Dev note: add Supabase keys to <code>.env.local</code> to store real signups.
-        </p>
-      )}
     </form>
   )
 }

@@ -3,16 +3,9 @@ import Bouncy from '../components/Bouncy'
 import WaitlistForm from '../components/WaitlistForm'
 import { useReveal } from '../hooks/useReveal'
 import { Balloon, Bunting, Star } from '../components/decor'
-import type { Lang } from '../data/vocab'
 import type { BouncyState } from '../data/sprites'
 
-export default function Summit({
-  lang,
-  onCelebrate,
-}: {
-  lang: Lang | null
-  onCelebrate: () => void
-}) {
+export default function Summit({ onCelebrate }: { onCelebrate: () => void }) {
   const ref = useReveal<HTMLElement>()
   const [pose, setPose] = useState<BouncyState>('idle')
   const [party, setParty] = useState(false)
@@ -59,7 +52,7 @@ export default function Summit({
         </p>
 
         <div data-reveal style={{ display: 'flex', justifyContent: 'center' }}>
-          <WaitlistForm variant="full" locale={lang} onSuccess={handleSuccess} />
+          <WaitlistForm variant="full" onSuccess={handleSuccess} />
         </div>
       </div>
     </section>

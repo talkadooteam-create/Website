@@ -32,12 +32,12 @@ export default function Landing() {
       </a>
 
       <main>
-        <Shore lang={lang} onSuccess={handleCelebrate} />
+        <Shore onSuccess={handleCelebrate} />
         <Meadow lang={lang} setLang={setLang} />
         <Suspense fallback={<Loading />}>
           <Forest />
           <LanguagePeaks lang={lang} setLang={setLang} />
-          <Summit lang={lang} onCelebrate={handleCelebrate} />
+          <Summit onCelebrate={handleCelebrate} />
           <WhereWeAre />
           <Founders />
         </Suspense>
@@ -64,7 +64,7 @@ export default function Landing() {
           <a href="mailto:talkadoo.team@gmail.com" style={{ color: '#f5efe0' }}>
             talkadoo.team@gmail.com
           </a>{' '}
-          · Made with care in the EU 🇪🇺
+          · Made with care in the EU.
         </p>
       </footer>
     </>

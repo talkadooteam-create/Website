@@ -2,18 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Bouncy from '../components/Bouncy'
 import WaitlistForm from '../components/WaitlistForm'
-import { JumpSquares, Star, Dot } from '../components/decor'
+import { JumpMat, Star, Dot } from '../components/decor'
 import { useReveal } from '../hooks/useReveal'
-import type { Lang } from '../data/vocab'
 import type { BouncyState } from '../data/sprites'
 
-export default function Shore({
-  lang,
-  onSuccess,
-}: {
-  lang: Lang | null
-  onSuccess: () => void
-}) {
+export default function Shore({ onSuccess }: { onSuccess: () => void }) {
   const ref = useReveal<HTMLElement>()
   const [pose, setPose] = useState<BouncyState>('idle')
 
@@ -177,13 +170,16 @@ export default function Shore({
             the matching square — moving, laughing and learning, right off the screen.
           </p>
           <div data-reveal>
-            <WaitlistForm variant="hero" locale={lang} onSuccess={onSuccess} />
+            <WaitlistForm variant="hero" onSuccess={onSuccess} />
           </div>
 
-          <div data-reveal style={{ marginTop: '2rem' }}>
-            <JumpSquares count={4} lit={1} size={44} />
-            <p style={{ fontSize: '0.8rem', opacity: 0.6, margin: '0.5rem 0 0' }}>
-              Four glowing squares. One waiting jump.
+          <div
+            data-reveal
+            style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}
+          >
+            <JumpMat lit={2} />
+            <p style={{ fontSize: '0.85rem', opacity: 0.7, margin: 0, maxWidth: 180 }}>
+              Hear a word → jump to the right square. That’s the whole game.
             </p>
           </div>
         </div>

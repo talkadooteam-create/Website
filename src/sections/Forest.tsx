@@ -6,7 +6,7 @@ const PROPS = [
   {
     title: 'Moving, not scrolling',
     body: 'Talkadoo gets kids off the sofa and onto their feet. Learning happens through the body, not a touchscreen.',
-    emoji: '🦘',
+    emoji: '🏃',
     color: 'var(--color-orange)',
   },
   {
@@ -18,13 +18,13 @@ const PROPS = [
   {
     title: 'They think it’s a game',
     body: 'To your child it’s pure play: jump, giggle, celebrate. The learning rides along for free.',
-    emoji: '🎈',
+    emoji: '🎮',
     color: 'var(--color-pink)',
   },
   {
     title: 'Nothing for you to run',
     body: 'No lesson plans, no homework, no screens to police. Plug in the mat and let them play.',
-    emoji: '🌿',
+    emoji: '✅',
     color: 'var(--color-gold)',
   },
 ]
@@ -87,35 +87,34 @@ export default function Forest() {
               style={{
                 background: '#fffdf7',
                 borderRadius: 26,
-                padding: '1.7rem 1.5rem',
+                padding: '2rem 1.5rem',
                 boxShadow: 'var(--shadow-soft)',
                 display: 'flex',
-                gap: '1rem',
-                alignItems: 'flex-start',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
               }}
             >
               <span
                 aria-hidden="true"
                 style={{
-                  flex: '0 0 auto',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: 56,
-                  height: 56,
+                  width: 64,
+                  height: 64,
                   borderRadius: '50%',
                   background: `${p.color}22`,
-                  fontSize: '1.7rem',
+                  fontSize: '1.9rem',
+                  marginBottom: '1rem',
                 }}
               >
                 {p.emoji}
               </span>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.35rem', color: p.color === 'var(--color-gold)' ? 'var(--color-orange)' : p.color }}>
-                  {p.title}
-                </h3>
-                <p style={{ margin: 0, opacity: 0.85 }}>{p.body}</p>
-              </div>
+              <h3 style={{ fontSize: '1.25rem', marginBottom: '0.4rem', color: p.color === 'var(--color-gold)' ? 'var(--color-orange)' : p.color }}>
+                {p.title}
+              </h3>
+              <p style={{ margin: 0, opacity: 0.85 }}>{p.body}</p>
             </article>
           ))}
         </div>

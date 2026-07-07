@@ -71,6 +71,7 @@ export default function LanguagePeaks({
           {LANGUAGES.map((l, i) => {
             const on = i === active && lang === l.code
             const peakColor = ['#7A3FC4', '#E8912B', '#F58BA0', '#F5C542'][i]
+            const peakLight = ['#b48ee0', '#f3b972', '#f9b6c4', '#f9dd8a'][i]
             return (
               <button
                 key={l.code}
@@ -89,39 +90,64 @@ export default function LanguagePeaks({
                   padding: '0.3rem 0',
                 }}
               >
-                {/* mountain */}
+                {/* crafted SVG mountain — gradient body, snow cap, soft outline */}
                 <div
                   style={{
                     position: 'relative',
-                    width: 0,
-                    height: 0,
-                    borderLeft: 'clamp(38px, 11vw, 68px) solid transparent',
-                    borderRight: 'clamp(38px, 11vw, 68px) solid transparent',
-                    borderBottom: `clamp(90px, 24vw, 150px) solid ${peakColor}`,
-                    filter: on ? 'saturate(1.2)' : 'saturate(0.85)',
-                    transform: on ? 'translateY(-6px)' : 'none',
-                    transition: 'transform .3s, filter .3s',
+                    transform: on ? 'translateY(-8px)' : 'none',
+                    filter: on ? 'saturate(1.1) brightness(1.03)' : 'saturate(0.92)',
+                    transition: 'transform .3s cubic-bezier(0.34,1.4,0.64,1), filter .3s',
                   }}
                 >
-                  {/* snow cap + flag */}
-                  <span
+                  <svg
+                    viewBox="0 0 120 120"
                     aria-hidden="true"
                     style={{
-                      position: 'absolute',
-                      top: 'clamp(6px, 2vw, 14px)',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
+                      display: 'block',
+                      width: 'clamp(84px, 24vw, 150px)',
+                      height: 'auto',
+                      filter: 'drop-shadow(0 8px 9px rgba(43,43,51,0.22))',
                     }}
+                  >
+                    <defs>
+                      <linearGradient id={`peak-${i}`} x1="0" y1="0" x2="0.25" y2="1">
+                        <stop offset="0" stopColor={peakLight} />
+                        <stop offset="1" stopColor={peakColor} />
+                      </linearGradient>
+                    </defs>
+                    {/* body */}
+                    <path
+                      d="M11 113 L60 12 L109 113 Z"
+                      fill={`url(#peak-${i})`}
+                      stroke="#2b2b33"
+                      strokeOpacity="0.22"
+                      strokeWidth="2.5"
+                      strokeLinejoin="round"
+                    />
+                    {/* soft shaded right facet */}
+                    <path d="M60 12 L109 113 L72 113 Z" fill="#2b2b33" fillOpacity="0.08" />
+                    {/* snow cap with a wavy hem */}
+                    <path
+                      d="M60 12 L43 47 Q49 43 54 46 Q60 41 66 46 Q71 43 77 47 Z"
+                      fill="#ffffff"
+                      stroke="#2b2b33"
+                      strokeOpacity="0.12"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {/* flag planted at the summit */}
+                  <span
+                    aria-hidden="true"
+                    style={{ position: 'absolute', top: '2%', left: '50%', transform: 'translateX(-50%)' }}
                   >
                     <img
                       src={l.flag}
                       alt=""
-                      width={34}
-                      height={24}
                       style={{
                         borderRadius: 4,
-                        boxShadow: '0 3px 6px rgba(0,0,0,0.25)',
-                        width: 'clamp(24px, 6vw, 36px)',
+                        boxShadow: '0 3px 6px rgba(0,0,0,0.28)',
+                        width: 'clamp(22px, 5.5vw, 34px)',
                         height: 'auto',
                       }}
                     />
