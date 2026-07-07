@@ -6,6 +6,7 @@ import { celebrate } from '../lib/confetti'
 import type { Lang } from '../data/vocab'
 
 // Later regions are lazy-loaded so the hero paints fast on 4G.
+const LivingRoom = lazy(() => import('../sections/LivingRoom'))
 const Forest = lazy(() => import('../sections/Forest'))
 const LanguagePeaks = lazy(() => import('../sections/LanguagePeaks'))
 const Summit = lazy(() => import('../sections/Summit'))
@@ -35,6 +36,7 @@ export default function Landing() {
         <Shore onSuccess={handleCelebrate} />
         <Meadow lang={lang} setLang={setLang} />
         <Suspense fallback={<Loading />}>
+          <LivingRoom />
           <Forest />
           <LanguagePeaks lang={lang} setLang={setLang} />
           <Summit onCelebrate={handleCelebrate} />

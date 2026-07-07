@@ -49,17 +49,15 @@ SEO: real HTML text + JSON-LD (Organization + Product + FAQPage) in `index.html`
    Until then the form is fully working but honestly reports "not connected yet" —
    it never fakes success. The insert code is real (`src/lib/supabase.ts`).
 
-2. **Founders photo.** Drop one shared **`founders-together.jpg`** (photo of both
-   founders together) into `public/`. Until then the section shows a clean labelled
-   placeholder frame. (The old per-founder monogram avatars were removed.)
+2. **Founders photo.** ✅ Done — `public/founders-together.jpg` is in place (a shared
+   photo of both founders, auto-oriented + web-optimised). Bios are approved (the
+   DRAFT tags are removed).
 
 3. **LinkedIn URLs.** Both are placeholders showing a dashed "LinkedIn URL — to
    add" chip. Set the `linkedin` fields in `src/sections/Founders.tsx`.
 
-4. **Founder bios are DRAFTS.** Each card shows a "Draft bio — Maira to approve"
-   badge. These are the drafts from your brief, in your words — review/edit them in
-   `src/sections/Founders.tsx`, then delete the badge `<span>` once approved.
-   **Nothing here should ship unapproved.**
+4. **Founder bios.** ✅ Approved — the "Draft bio" badges are removed. Edit the text
+   anytime in `src/sections/Founders.tsx`.
 
 5. **"mouse" → "duck".** Your brief listed a mouse in the meadow, but Talkadoo has
    no mouse art or word data yet, so I seeded **duck** instead (real art + real

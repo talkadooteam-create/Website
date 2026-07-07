@@ -157,6 +157,19 @@ h3 {
   animation: twinkle 2.4s ease-in-out infinite;
 }
 
+/* Slow "Ken Burns" drift for showcase photos — gives a still image gentle life */
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.07) translate(-1.5%, -1%);
+  }
+}
+.ken-burns {
+  animation: ken-burns 14s ease-in-out infinite alternate;
+}
+
 /* Squash-and-stretch press feedback for interactive play-objects */
 .squish {
   transition:
@@ -182,6 +195,13 @@ h3 {
 @media (min-width: 900px) {
   .shore-penguin {
     order: 0;
+  }
+}
+
+/* Living-room showcase: mat beside the spec chips on wider screens */
+@media (min-width: 760px) {
+  .lr-grid {
+    grid-template-columns: 0.9fr 1.1fr !important;
   }
 }
 

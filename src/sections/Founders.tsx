@@ -32,7 +32,7 @@ function SharedPhoto() {
   const [failed, setFailed] = useState(false)
   const frame: React.CSSProperties = {
     width: '100%',
-    maxWidth: 440,
+    maxWidth: 380,
     margin: '0 auto',
     borderRadius: 28,
     overflow: 'hidden',
@@ -129,24 +129,6 @@ export default function Founders() {
               <p style={{ color: 'var(--color-purple)', fontWeight: 700, fontSize: '0.92rem', margin: '0 0 0.9rem' }}>
                 {f.role}
               </p>
-
-              {/* Draft bio — clearly marked, awaiting Maira's approval */}
-              <span
-                style={{
-                  fontSize: '0.66rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-orange)',
-                  background: '#fff3d6',
-                  border: '1.5px dashed var(--color-orange)',
-                  borderRadius: 999,
-                  padding: '0.15rem 0.6rem',
-                  marginBottom: '0.7rem',
-                }}
-              >
-                Draft bio — Maira to approve
-              </span>
               <p style={{ margin: 0, opacity: 0.9, fontSize: '0.96rem', lineHeight: 1.55 }}>{f.bio}</p>
 
               <div style={{ marginTop: '1.1rem' }}>
