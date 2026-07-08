@@ -6,7 +6,8 @@ import Landing from './pages/Landing'
 // Account area is lazy-loaded — it never weighs on the public landing page.
 const Login = lazy(() => import('./pages/Login'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
-const LinkDevice = lazy(() => import('./pages/LinkDevice'))
+// NOTE: /link is NOT a React route — it's served as a standalone static page
+// (public/link.html, the real box-pairing page) via a rewrite in vercel.json.
 
 function FullPageLoader() {
   return (
@@ -32,7 +33,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/link" element={<LinkDevice />} />
             <Route
               path="/dashboard"
               element={

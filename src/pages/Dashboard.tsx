@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import AccountShell from '../components/account/AccountShell'
 import ChildForm from '../components/account/ChildForm'
 import ProgressPanel from '../components/account/ProgressPanel'
@@ -198,8 +197,10 @@ export default function Dashboard() {
             When your mat arrives, link it to your account with the code on your TV.
           </p>
         </div>
-        <Link
-          to="/link"
+        {/* Full-page navigation (not client-side) so it lands on the real static
+            pairing page served at /link (public/link.html), not the React app. */}
+        <a
+          href="/link"
           style={{
             background: 'var(--color-purple)',
             color: '#fff',
@@ -211,7 +212,7 @@ export default function Dashboard() {
           }}
         >
           Link a device
-        </Link>
+        </a>
       </section>
     </AccountShell>
   )

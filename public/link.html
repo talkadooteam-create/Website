@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Talkadoo — Link your box</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">🗣️</span> Talkadoo</div>
+      <div class="header-right">
+        <label class="lang">
+          <span class="sr-only" data-i18n="lang">Language</span>
+          <select id="lang-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="sv">Svenska</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </label>
+        <div id="auth-chip" class="auth-chip" hidden>
+          <span id="auth-email" class="auth-email"></span>
+          <button id="signout-btn" class="btn btn-ghost" data-i18n="signOut">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1 data-i18n="title">Link your Talkadoo box</h1>
+      <p class="lede" data-i18n="lede">Enter the code shown on your child's TV to connect the box to your account — no typing on the TV needed.</p>
+      <p id="config-warning" class="notice notice-warn" hidden data-i18n="notConfigured">
+        This page isn't connected yet. Linking needs the backend configured.
+      </p>
+    </section>
+
+    <!-- Sign-in card (shown when signed out) — device_claim runs AS the signed-in parent. -->
+    <section id="auth-panel" class="auth-panel card" hidden>
+      <h2 data-i18n="signInTitle">Sign in to link your box</h2>
+      <p class="muted" data-i18n="signInHint">Use the SAME account you set up on your child's Talkadoo.</p>
+      <form id="auth-form" class="auth-form" autocomplete="on">
+        <label class="field">
+          <span data-i18n="email">Email</span>
+          <input id="email" type="email" required autocomplete="email" />
+        </label>
+        <label class="field">
+          <span data-i18n="password">Password</span>
+          <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+        </label>
+        <div class="auth-actions">
+          <button type="submit" id="signin-btn" class="btn btn-primary" data-i18n="signIn">Sign in</button>
+          <button type="button" id="signup-btn" class="btn btn-ghost" data-i18n="createAccount">Create account</button>
+        </div>
+        <p id="auth-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Link card (shown when signed in) -->
+    <section id="link-panel" class="auth-panel card" hidden>
+      <h2 data-i18n="linkTitle">Enter the code from the TV</h2>
+      <p class="muted" data-i18n="linkHint">You'll see a 4-character code on your child's Talkadoo screen.</p>
+      <form id="link-form" class="auth-form" autocomplete="off">
+        <label class="field">
+          <span data-i18n="codeLabel">Pairing code</span>
+          <input id="code" class="code-input" type="text" inputmode="latin"
+                 autocomplete="off" autocapitalize="characters" spellcheck="false"
+                 maxlength="4" aria-describedby="link-msg" placeholder="4F7K" />
+        </label>
+        <div class="auth-actions">
+          <button type="submit" id="link-btn" class="btn btn-primary" data-i18n="linkBtn">Link box</button>
+        </div>
+        <p id="link-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </form>
+      <p id="link-done" class="link-done" hidden>
+        <span aria-hidden="true">✅</span>
+        <span data-i18n="linkedBody">Your box is linked. It signs in on its own in a few seconds — you can put your phone down.</span>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="muted small" data-i18n="footNote">
+        Linking only connects this box to your account. Your child's profiles and any packs you own
+        appear on the box automatically — you can view or delete them from the child's Talkadoo at any time.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Publishable config (copy config.sample.js → config.js). -->
+  <script src="config.js" onerror="console.info('store/config.js not found — link page needs it to connect')"></script>
+  <!-- supabase-js from CDN is fine on the WEBSITE (the no-fetch rule is for the game). -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="link.js"></script>
+</body>
+</html>
