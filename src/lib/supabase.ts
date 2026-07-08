@@ -1,17 +1,23 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+// Publishable (anon) credentials — safe in the browser. The anon key ships in the
+// client bundle no matter what, and these are the SAME publishable values already
+// committed in the /link page's config.js. Baking them in as defaults means the app
+// works in production with no Vercel env-var setup. An env var (.env.local locally,
+// or a Vercel Environment Variable) still overrides them if you ever want to.
+const FALLBACK_URL = 'https://qairdgfpuyzqycgtqvas.supabase.co'
+const FALLBACK_ANON_KEY = 'sb_publishable_VuHrBIAGRlS6emX4h6G2CA_11C9EXkt'
 
-/** True once real Supabase credentials are present in .env.local. */
+const url = (import.meta.env.VITE_SUPABASE_URL as string) || FALLBACK_URL
+const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || FALLBACK_ANON_KEY
+
+/** Always true now that publishable defaults are baked in. */
 export const isSupabaseConfigured = Boolean(url && anonKey)
 
-/** Shared browser client (null until credentials are set). Persists the parent session. */
-export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(url!, anonKey!, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
-    })
-  : null
+/** Shared browser client. Persists the parent session across pages on this origin. */
+export const supabase: SupabaseClient | null = createClient(url, anonKey, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+})
 
 // Kept for the existing waitlist form.
 export const isWaitlistConnected = isSupabaseConfigured
