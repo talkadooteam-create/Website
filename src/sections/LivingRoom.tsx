@@ -4,7 +4,7 @@ import { Star, Dot } from '../components/decor'
 const SPECS = [
   { emoji: '📺', title: 'Plugs into any TV', body: 'The mat connects to your telly, and the whole game plays on the big screen.' },
   { emoji: '📐', title: '96 × 96 cm', body: 'A nine-square play grid that fits neatly into any living room.' },
-  { emoji: '🪶', title: '10 mm thin', body: 'Light and low-profile, so it rolls away in seconds when playtime’s over.' },
+  { emoji: '🧘', title: 'Rolls up & away', body: 'Just 10 mm thin and featherlight. When the fun is done, roll it up like a yoga mat and tuck it neatly out of sight.' },
   { emoji: '🧼', title: 'Wipe-clean', body: 'Built for real family life: sturdy, soft underfoot and easy to clean.' },
 ]
 
@@ -63,7 +63,7 @@ export default function LivingRoom() {
             src="./product/child-playing.jpg"
             alt="A child mid-jump on the Talkadoo mat in a living room, with the game showing on the TV"
             loading="lazy"
-            className="ken-burns"
+            className="child-jump"
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
 

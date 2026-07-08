@@ -170,6 +170,30 @@ h3 {
   animation: ken-burns 14s ease-in-out infinite alternate;
 }
 
+/* Playful "hop" for the living-room hero — the whole framed shot springs up like a
+   jump, then settles, every couple of seconds. Baseline scale hides frame edges so
+   the bounce never reveals gaps. */
+@keyframes child-jump {
+  0%,
+  58%,
+  100% {
+    transform: scale(1.08) translateY(1.4%);
+  }
+  24% {
+    transform: scale(1.08) translateY(-3.4%);
+  }
+  40% {
+    transform: scale(1.08) translateY(0.6%);
+  }
+  48% {
+    transform: scale(1.08) translateY(-1%);
+  }
+}
+.child-jump {
+  animation: child-jump 2.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
 /* Squash-and-stretch press feedback for interactive play-objects */
 .squish {
   transition:
