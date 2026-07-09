@@ -50,6 +50,10 @@
       navUp: 'Up', navDown: 'Down', navLeft: 'Left', navRight: 'Right', navOk: 'OK',
       progressTitle: 'Progress', progressHint: 'A summary for grown-ups.', progressNone: 'No progress recorded yet.',
       progressOnTv: '📺 Full report on TV',
+      tvStatusTitle: 'Now on the TV', tvStatusNone: 'Nothing on the TV yet.',
+      statusMenu: 'On the menu', statusChoosing: 'Choosing a game', statusReady: 'Getting ready',
+      statusPlaying: '▶ Playing', statusResults: 'Results', statusReport: 'Grown-ups report',
+      statusOther: 'On the TV', statusPaused: 'Paused',
       known: 'Known', learning: 'Learning', seen: 'Seen', refresh: 'Refresh',
       error: 'Something went wrong. Please try again.',
       bandYears: 'yrs',
@@ -81,6 +85,10 @@
       navUp: 'Upp', navDown: 'Ner', navLeft: 'Vänster', navRight: 'Höger', navOk: 'OK',
       progressTitle: 'Framsteg', progressHint: 'En sammanfattning för vuxna.', progressNone: 'Inga framsteg registrerade ännu.',
       progressOnTv: '📺 Fullständig rapport på TV:n',
+      tvStatusTitle: 'På TV:n nu', tvStatusNone: 'Inget på TV:n än.',
+      statusMenu: 'I menyn', statusChoosing: 'Väljer ett spel', statusReady: 'Gör sig redo',
+      statusPlaying: '▶ Spelar', statusResults: 'Resultat', statusReport: 'Vuxenrapport',
+      statusOther: 'På TV:n', statusPaused: 'Pausad',
       known: 'Kan', learning: 'Lär sig', seen: 'Sett', refresh: 'Uppdatera',
       error: 'Något gick fel. Försök igen.',
       bandYears: 'år',
@@ -112,6 +120,10 @@
       navUp: 'Arriba', navDown: 'Abajo', navLeft: 'Izquierda', navRight: 'Derecha', navOk: 'OK',
       progressTitle: 'Progreso', progressHint: 'Un resumen para adultos.', progressNone: 'Aún no hay progreso registrado.',
       progressOnTv: '📺 Informe completo en la TV',
+      tvStatusTitle: 'En la TV ahora', tvStatusNone: 'Nada en la TV todavía.',
+      statusMenu: 'En el menú', statusChoosing: 'Eligiendo un juego', statusReady: 'Preparándose',
+      statusPlaying: '▶ Jugando', statusResults: 'Resultados', statusReport: 'Informe para adultos',
+      statusOther: 'En la TV', statusPaused: 'En pausa',
       known: 'Sabe', learning: 'Aprendiendo', seen: 'Visto', refresh: 'Actualizar',
       error: 'Algo salió mal. Inténtalo de nuevo.',
       bandYears: 'años',
@@ -143,6 +155,10 @@
       navUp: 'Hoch', navDown: 'Runter', navLeft: 'Links', navRight: 'Rechts', navOk: 'OK',
       progressTitle: 'Fortschritt', progressHint: 'Eine Zusammenfassung für Erwachsene.', progressNone: 'Noch kein Fortschritt erfasst.',
       progressOnTv: '📺 Vollständiger Bericht am TV',
+      tvStatusTitle: 'Jetzt am Fernseher', tvStatusNone: 'Noch nichts am Fernseher.',
+      statusMenu: 'Im Menü', statusChoosing: 'Wählt ein Spiel', statusReady: 'Macht sich bereit',
+      statusPlaying: '▶ Spielt', statusResults: 'Ergebnisse', statusReport: 'Bericht für Erwachsene',
+      statusOther: 'Am Fernseher', statusPaused: 'Pausiert',
       known: 'Kann', learning: 'Lernt', seen: 'Gesehen', refresh: 'Aktualisieren',
       error: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
       bandYears: 'J.',
@@ -206,8 +222,10 @@
   var selectedChildId = null;   // active_child_id (from game_state)
   var gameState = null;         // the parent's game_state row
   var boxSettings = null;       // the parent's box_settings row (session length + voice)
+  var boxStatus = null;         // the box's box_status row (what's on the TV now; read-only)
   var editingId = null;         // child id being edited (null = adding new)
   var stateChannel = null;      // Realtime subscription to game_state
+  var statusChannel = null;     // Realtime subscription to box_status
 
   // Consent — same shape/columns the box + link page write.
   var CONSENT_VERSION = cfg.CONSENT_VERSION || '2026-06-30';
@@ -297,6 +315,8 @@
       el('auth-panel').hidden = !configured;
       el('dash').hidden = true;
       if (stateChannel) { try { sb.removeChannel(stateChannel); } catch (e) {} stateChannel = null; }
+      if (statusChannel) { try { sb.removeChannel(statusChannel); } catch (e) {} statusChannel = null; }
+      boxStatus = null;
     }
   }
 
@@ -307,11 +327,13 @@
       sb.from('children').select('*').order('created_at', { ascending: true }),
       sb.from('game_state').select('*').maybeSingle(),
       sb.from('box_settings').select('*').maybeSingle(),
+      sb.from('box_status').select('*').maybeSingle(),
     ]).then(function (res) {
-      var childRes = res[0], stateRes = res[1], setRes = res[2];
+      var childRes = res[0], stateRes = res[1], setRes = res[2], statusRes = res[3];
       children = (childRes && childRes.data) || [];
       gameState = (stateRes && stateRes.data) || null;
       boxSettings = (setRes && setRes.data) || null;
+      boxStatus = (statusRes && statusRes.data) || null;
       selectedChildId = gameState ? gameState.active_child_id : null;
       // Default the live controls to the current state (or sensible fallbacks).
       var langSel = el('play-lang');
@@ -319,6 +341,7 @@
       renderChildren();
       renderCategories();
       renderSettings();
+      renderTvStatus();
       renderProgress();
     });
   }
@@ -609,21 +632,68 @@
 
   // ── Realtime: reflect box-driven changes back into the UI ──
   function subscribeState() {
-    if (!sb || !currentUser || stateChannel) return;
-    try {
-      stateChannel = sb.channel('parent-game-state')
-        .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'game_state', filter: 'parent_id=eq.' + currentUser.id },
-          function (payload) {
-            var row = payload && payload.new;
-            if (!row) return;
-            gameState = row;
-            selectedChildId = row.active_child_id;
-            var ls = el('play-lang'); if (ls && row.language) ls.value = row.language;
-            renderChildren(); renderCategories(); renderProgress();
-          })
-        .subscribe();
-    } catch (e) { /* realtime is a nice-to-have */ }
+    if (!sb || !currentUser) return;
+    if (!stateChannel) {
+      try {
+        stateChannel = sb.channel('parent-game-state')
+          .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'game_state', filter: 'parent_id=eq.' + currentUser.id },
+            function (payload) {
+              var row = payload && payload.new;
+              if (!row) return;
+              gameState = row;
+              selectedChildId = row.active_child_id;
+              var ls = el('play-lang'); if (ls && row.language) ls.value = row.language;
+              renderChildren(); renderCategories(); renderProgress();
+            })
+          .subscribe();
+      } catch (e) { /* realtime is a nice-to-have */ }
+    }
+    // The box writes box_status; reflect "what's on the TV now" live.
+    if (!statusChannel) {
+      try {
+        statusChannel = sb.channel('parent-box-status')
+          .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'box_status', filter: 'parent_id=eq.' + currentUser.id },
+            function (payload) {
+              boxStatus = (payload && (payload.new || payload.old)) || null;
+              if (payload && payload.eventType === 'DELETE') boxStatus = null;
+              renderTvStatus();
+            })
+          .subscribe();
+      } catch (e) { /* realtime is a nice-to-have */ }
+    }
+  }
+
+  // ── "Now on the TV" status (read-only; from box_status) ──
+  function screenLabel(screen) {
+    var map = {
+      'screen-menu': 'statusMenu',
+      'screen-intro': 'statusChoosing', 'screen-category': 'statusChoosing',
+      'screen-children': 'statusChoosing', 'screen-add-child': 'statusChoosing',
+      'screen-level-intro': 'statusReady',
+      'screen-game': 'statusPlaying',
+      'screen-results': 'statusResults',
+      'screen-progress': 'statusReport',
+    };
+    return t(map[screen] || 'statusOther');
+  }
+  function renderTvStatus() {
+    var host = el('tv-status');
+    if (!host) return;
+    var row = boxStatus;
+    if (!row) { host.textContent = t('tvStatusNone'); host.className = 'tv-status muted'; return; }
+    var parts = [];
+    parts.push(row.paused ? '⏸ ' + t('statusPaused') : screenLabel(row.current_screen));
+    if (row.current_category) parts.push(catTitle(row.current_category));
+    var kid = row.active_child_id && children.filter(function (c) { return c.id === row.active_child_id; })[0];
+    if (kid) parts.push(kid.nickname);   // host.textContent below escapes; don't double-escape
+    var sc = row.score;
+    if (row.current_screen === 'screen-game' && sc && (sc.total || sc.correct)) {
+      parts.push((sc.correct || 0) + '/' + (sc.total || 0));
+    }
+    host.textContent = parts.join(' · ');
+    host.className = 'tv-status';
   }
 
   // ── Auth wiring (same shape as store/link.js) ──
@@ -663,7 +733,7 @@
       lang = e.target.value;
       try { localStorage.setItem(LANG_KEY, lang); } catch (err) { /* ignore */ }
       applyChrome();
-      renderChildren(); renderCategories(); renderSettings(); renderProgress();
+      renderChildren(); renderCategories(); renderSettings(); renderTvStatus(); renderProgress();
     });
     el('add-child-btn').addEventListener('click', function () { openForm(null); });
     el('cf-cancel').addEventListener('click', closeForm);

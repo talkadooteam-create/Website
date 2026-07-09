@@ -48,6 +48,9 @@
     .remote-grid .remote-wide { grid-column: 1 / -1; }
     .prog-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
 
+    .tv-status { font-size: 1.1rem; font-weight: 700; margin: .35rem 0 0; }
+    .tv-status.muted { font-weight: 400; }
+
     .dpad-hint { margin-top: .9rem; text-align: center; }
     .dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; max-width: 240px;
       margin: .4rem auto 0; }
@@ -124,6 +127,12 @@
 
     <!-- Dashboard (shown when signed in) -->
     <div id="dash" hidden>
+
+      <!-- Now on the TV (box → phone status; read-only). Reflects box_status via Realtime. -->
+      <section class="auth-panel card dash-section" id="tv-status-section">
+        <h2 data-i18n="tvStatusTitle">Now on the TV</h2>
+        <p id="tv-status" class="tv-status muted" role="status" aria-live="polite">…</p>
+      </section>
 
       <!-- Children -->
       <section class="auth-panel card dash-section">
