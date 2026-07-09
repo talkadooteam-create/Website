@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Talkadoo — Your Talkadoo</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Supplemental styles for the parent dashboard (kept here so the page is drop-in
+       next to link.html without touching the shared styles.css). */
+    .dash-section { margin-top: 1.25rem; }
+    .dash-section > h2 { margin-bottom: .25rem; }
+    .row-between { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+    .btn-sm { padding: .35rem .7rem; font-size: .9rem; }
+    .danger { color: #c0392b; }
+
+    .children-list { display: flex; flex-direction: column; gap: .6rem; margin-top: .75rem; }
+    .child-card { display: flex; align-items: center; gap: .75rem; padding: .6rem .75rem; border: 2px solid rgba(0,0,0,.08);
+      border-radius: 14px; background: #fff; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+    .child-card.is-active { border-color: #e6397e; box-shadow: 0 2px 12px rgba(230,57,126,.18); }
+    .child-avatar { font-size: 1.8rem; line-height: 1; }
+    .child-main { flex: 1 1 auto; min-width: 0; }
+    .child-name { font-weight: 700; }
+    .badge { display: inline-block; font-size: .72rem; font-weight: 700; color: #fff; background: #e6397e;
+      border-radius: 999px; padding: .05rem .5rem; margin-left: .35rem; vertical-align: middle; }
+    .child-actions { display: flex; gap: .35rem; flex-wrap: wrap; }
+
+    .avatar-picker { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .avatar-chip { font-size: 1.5rem; line-height: 1; padding: .3rem .45rem; border: 2px solid transparent;
+      border-radius: 12px; background: #f1f3f5; cursor: pointer; }
+    .avatar-chip.selected { border-color: #e6397e; background: #fde7f0; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .form-grid .field.full { grid-column: 1 / -1; }
+    @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: .5rem; margin-top: .75rem; }
+    .cat-tile { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .6rem .35rem;
+      border: 2px solid rgba(0,0,0,.08); border-radius: 14px; background: #fff; cursor: pointer; text-align: center; }
+    .cat-tile.is-active { border-color: #e6397e; box-shadow: 0 2px 12px rgba(230,57,126,.18); }
+    .cat-emoji { font-size: 1.7rem; line-height: 1; }
+    .cat-name { font-size: .82rem; font-weight: 600; }
+    .cat-tag { font-size: .66rem; text-transform: uppercase; letter-spacing: .04em; }
+
+    .remote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .75rem; }
+    .remote-grid .btn { padding: .8rem .6rem; font-size: 1rem; }
+    @media (max-width: 380px) { .remote-grid { grid-template-columns: 1fr; } }
+
+    .stat-row { display: flex; gap: 1.25rem; margin-top: .5rem; }
+    .stat-n { font-size: 1.6rem; font-weight: 800; color: #e6397e; }
+    .stat-l { font-size: .8rem; }
+    .shake { animation: shake .4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">🗣️</span> Talkadoo</div>
+      <div class="header-right">
+        <label class="lang">
+          <span class="sr-only" data-i18n="lang">Language</span>
+          <select id="lang-select" aria-label="Language">
+            <option value="en">English</option>
+            <option value="sv">Svenska</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </label>
+        <div id="auth-chip" class="auth-chip" hidden>
+          <span id="auth-email" class="auth-email"></span>
+          <button id="signout-btn" class="btn btn-ghost" data-i18n="signOut">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1 data-i18n="title">Your Talkadoo</h1>
+      <p class="lede" data-i18n="lede">Add your children and choose what plays on the TV — changes appear on your child's screen automatically.</p>
+      <p id="config-warning" class="notice notice-warn" hidden data-i18n="notConfigured">
+        This page isn't connected yet. It needs the backend configured.
+      </p>
+    </section>
+
+    <!-- Sign-in card (shown when signed out) -->
+    <section id="auth-panel" class="auth-panel card" hidden>
+      <h2 data-i18n="signInTitle">Sign in</h2>
+      <p class="muted" data-i18n="signInHint">Use the SAME account you set up on your child's Talkadoo.</p>
+      <form id="auth-form" class="auth-form" autocomplete="on">
+        <label class="field">
+          <span data-i18n="email">Email</span>
+          <input id="email" type="email" required autocomplete="email" />
+        </label>
+        <label class="field">
+          <span data-i18n="password">Password</span>
+          <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+        </label>
+        <label class="consent-row">
+          <input id="consent-check" type="checkbox" />
+          <span data-i18n="consentLabel">I'm the parent or guardian and I consent to Talkadoo storing my child's minimal profile — nickname, age band and language — to save their learning progress. (Required to create an account.)</span>
+        </label>
+        <div class="auth-actions">
+          <button type="submit" id="signin-btn" class="btn btn-primary" data-i18n="signIn">Sign in</button>
+          <button type="button" id="signup-btn" class="btn btn-ghost" data-i18n="createAccount">Create account</button>
+        </div>
+        <p id="auth-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Dashboard (shown when signed in) -->
+    <div id="dash" hidden>
+
+      <!-- Children -->
+      <section class="auth-panel card dash-section">
+        <div class="row-between">
+          <h2 data-i18n="childrenTitle">Children</h2>
+          <button type="button" id="add-child-btn" class="btn btn-primary btn-sm" data-i18n="addChild">Add a child</button>
+        </div>
+        <p class="muted small" data-i18n="childrenHint">Tap a child to make them the active player on the TV.</p>
+        <div id="children-list" class="children-list"></div>
+
+        <!-- Add / edit form -->
+        <form id="child-form" class="auth-form" hidden style="margin-top:1rem;">
+          <h3 id="form-title">Add a child</h3>
+          <div class="form-grid">
+            <label class="field full">
+              <span data-i18n="nickname">First name / nickname</span>
+              <input id="cf-name" type="text" maxlength="40" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span data-i18n="ageBand">Age</span>
+              <select id="cf-band"></select>
+            </label>
+            <label class="field">
+              <span data-i18n="l1">Home language</span>
+              <select id="cf-l1"></select>
+            </label>
+            <label class="field">
+              <span data-i18n="target">Learning</span>
+              <select id="cf-target"></select>
+            </label>
+            <div class="field full">
+              <span data-i18n="avatarLabel">Pick an avatar</span>
+              <div id="avatar-picker" class="avatar-picker"></div>
+            </div>
+          </div>
+          <div class="auth-actions">
+            <button type="submit" id="cf-save" class="btn btn-primary" data-i18n="save">Save</button>
+            <button type="button" id="cf-cancel" class="btn btn-ghost" data-i18n="cancel">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Now playing (live controls) -->
+      <section class="auth-panel card dash-section">
+        <h2 data-i18n="nowPlaying">On the TV now</h2>
+        <p class="muted small" data-i18n="nowPlayingHint">These take effect on the TV within a second or two.</p>
+        <label class="field" style="max-width:280px;">
+          <span data-i18n="playLang">Language on the TV</span>
+          <select id="play-lang"></select>
+        </label>
+        <!-- hidden mirrors so pushState can read current child/category if needed -->
+        <select id="play-child" hidden></select>
+        <input id="play-cat-current" type="hidden" />
+        <p class="muted small" style="margin-top:.75rem;" data-i18n="category">Game / category</p>
+        <div id="category-grid" class="category-grid"></div>
+        <p id="play-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Settings (session length + instruction voice) -->
+      <section class="auth-panel card dash-section">
+        <h2 data-i18n="settingsTitle">Settings</h2>
+        <p class="muted small" data-i18n="settingsHint">These apply on the TV within a second or two.</p>
+        <div class="form-grid">
+          <label class="field">
+            <span data-i18n="sessionLength">Session length</span>
+            <select id="set-session"></select>
+          </label>
+          <label class="field">
+            <span data-i18n="voiceLabel">Instruction voice</span>
+            <select id="set-voice">
+              <option value="recorded" data-i18n="voiceRecorded">Alexandra (recorded)</option>
+              <option value="auto" data-i18n="voiceAuto">Auto friendly voice</option>
+            </select>
+          </label>
+        </div>
+        <p id="set-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Remote (one-shot commands to the TV) -->
+      <section class="auth-panel card dash-section">
+        <h2 data-i18n="remoteTitle">Remote</h2>
+        <p class="muted small" data-i18n="remoteHint">Control the TV like a remote.</p>
+        <div class="remote-grid">
+          <button type="button" id="rc-pause" class="btn btn-primary" data-cmd="pause" data-i18n="remotePause">⏸ Pause</button>
+          <button type="button" id="rc-resume" class="btn btn-primary" data-cmd="resume" data-i18n="remoteResume">▶ Resume</button>
+          <button type="button" id="rc-back" class="btn btn-ghost" data-cmd="back" data-i18n="remoteBack">← Back</button>
+          <button type="button" id="rc-quit" class="btn btn-ghost danger" data-cmd="quit" data-i18n="remoteQuit">■ Quit to menu</button>
+        </div>
+        <p id="rc-msg" class="auth-msg" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Progress -->
+      <section class="auth-panel card dash-section">
+        <div class="row-between">
+          <h2 data-i18n="progressTitle">Progress</h2>
+          <button type="button" id="progress-refresh" class="btn btn-ghost btn-sm" data-i18n="refresh">Refresh</button>
+        </div>
+        <p class="muted small" data-i18n="progressHint">A summary for grown-ups.</p>
+        <div id="progress-body"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="muted small">
+        Talkadoo · <a href="link.html">Link a box</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Publishable config (copy config.sample.js → config.js). -->
+  <script src="config.js" onerror="console.info('store/config.js not found — parent page needs it to connect')"></script>
+  <!-- supabase-js from CDN is fine on the WEBSITE (the no-fetch rule is for the game). -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="parent.js"></script>
+</body>
+</html>

@@ -51,6 +51,11 @@
           <span data-i18n="password">Password</span>
           <input id="password" type="password" required autocomplete="current-password" minlength="6" />
         </label>
+        <!-- Parental consent — required to CREATE an account (ignored when signing in). -->
+        <label class="consent-row">
+          <input id="consent-check" type="checkbox" />
+          <span data-i18n="consentLabel">I'm the parent or guardian and I consent to Talkadoo storing my child's minimal profile — nickname, age band and language — to save their learning progress. (Required to create an account.)</span>
+        </label>
         <div class="auth-actions">
           <button type="submit" id="signin-btn" class="btn btn-primary" data-i18n="signIn">Sign in</button>
           <button type="button" id="signup-btn" class="btn btn-ghost" data-i18n="createAccount">Create account</button>
@@ -78,6 +83,7 @@
       <p id="link-done" class="link-done" hidden>
         <span aria-hidden="true">✅</span>
         <span data-i18n="linkedBody">Your box is linked. It signs in on its own in a few seconds — you can put your phone down.</span>
+        <a id="dash-link" href="parent.html" class="btn btn-primary" style="display:inline-block;margin-top:12px;">Talkadoo →</a>
       </p>
     </section>
   </main>
