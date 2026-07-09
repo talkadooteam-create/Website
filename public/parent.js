@@ -46,6 +46,8 @@
       settingsSaved: 'Saved ✓',
       remoteTitle: 'Remote', remoteHint: 'Control the TV like a remote.',
       remoteStart: "▶ Let's go", remotePause: '⏸ Pause', remoteResume: '▶ Resume', remoteBack: '← Back', remoteQuit: '■ Quit to menu',
+      remoteNavHint: 'Move around the TV and press OK to select.', remoteDpad: 'Directional pad',
+      navUp: 'Up', navDown: 'Down', navLeft: 'Left', navRight: 'Right', navOk: 'OK',
       progressTitle: 'Progress', progressHint: 'A summary for grown-ups.', progressNone: 'No progress recorded yet.',
       progressOnTv: '📺 Full report on TV',
       known: 'Known', learning: 'Learning', seen: 'Seen', refresh: 'Refresh',
@@ -75,6 +77,8 @@
       settingsSaved: 'Sparat ✓',
       remoteTitle: 'Fjärrkontroll', remoteHint: 'Styr TV:n som en fjärrkontroll.',
       remoteStart: '▶ Nu kör vi', remotePause: '⏸ Pausa', remoteResume: '▶ Fortsätt', remoteBack: '← Tillbaka', remoteQuit: '■ Avsluta till menyn',
+      remoteNavHint: 'Flytta runt på TV:n och tryck OK för att välja.', remoteDpad: 'Styrkors',
+      navUp: 'Upp', navDown: 'Ner', navLeft: 'Vänster', navRight: 'Höger', navOk: 'OK',
       progressTitle: 'Framsteg', progressHint: 'En sammanfattning för vuxna.', progressNone: 'Inga framsteg registrerade ännu.',
       progressOnTv: '📺 Fullständig rapport på TV:n',
       known: 'Kan', learning: 'Lär sig', seen: 'Sett', refresh: 'Uppdatera',
@@ -104,6 +108,8 @@
       settingsSaved: 'Guardado ✓',
       remoteTitle: 'Mando', remoteHint: 'Controla la TV como un mando.',
       remoteStart: '▶ ¡Vamos!', remotePause: '⏸ Pausar', remoteResume: '▶ Reanudar', remoteBack: '← Atrás', remoteQuit: '■ Salir al menú',
+      remoteNavHint: 'Muévete por la TV y pulsa OK para seleccionar.', remoteDpad: 'Cruceta',
+      navUp: 'Arriba', navDown: 'Abajo', navLeft: 'Izquierda', navRight: 'Derecha', navOk: 'OK',
       progressTitle: 'Progreso', progressHint: 'Un resumen para adultos.', progressNone: 'Aún no hay progreso registrado.',
       progressOnTv: '📺 Informe completo en la TV',
       known: 'Sabe', learning: 'Aprendiendo', seen: 'Visto', refresh: 'Actualizar',
@@ -133,6 +139,8 @@
       settingsSaved: 'Gespeichert ✓',
       remoteTitle: 'Fernbedienung', remoteHint: 'Steuere den Fernseher wie eine Fernbedienung.',
       remoteStart: "▶ Los geht's", remotePause: '⏸ Pause', remoteResume: '▶ Weiter', remoteBack: '← Zurück', remoteQuit: '■ Zum Menü beenden',
+      remoteNavHint: 'Navigiere über den Fernseher und drücke OK zum Auswählen.', remoteDpad: 'Steuerkreuz',
+      navUp: 'Hoch', navDown: 'Runter', navLeft: 'Links', navRight: 'Rechts', navOk: 'OK',
       progressTitle: 'Fortschritt', progressHint: 'Eine Zusammenfassung für Erwachsene.', progressNone: 'Noch kein Fortschritt erfasst.',
       progressOnTv: '📺 Vollständiger Bericht am TV',
       known: 'Kann', learning: 'Lernt', seen: 'Gesehen', refresh: 'Aktualisieren',
@@ -232,6 +240,12 @@
       var k = nodes[i].getAttribute('data-i18n');
       if (STR[lang] && STR[lang][k]) nodes[i].textContent = STR[lang][k];
       else if (STR.en[k]) nodes[i].textContent = STR.en[k];
+    }
+    // aria-label localisation (D-pad buttons have icon glyphs, so the label carries meaning).
+    var arias = document.querySelectorAll('[data-i18n-aria-label]');
+    for (var j = 0; j < arias.length; j++) {
+      var ak = arias[j].getAttribute('data-i18n-aria-label');
+      arias[j].setAttribute('aria-label', (STR[lang] && STR[lang][ak]) || STR.en[ak] || ak);
     }
     var sel = el('lang-select'); if (sel) sel.value = lang;
     el('config-warning').hidden = configured;
@@ -657,7 +671,8 @@
     el('play-lang').addEventListener('change', function () { pushState({ language: el('play-lang').value }); });
     el('set-session').addEventListener('change', function () { pushSettings({ session_minutes: Number(el('set-session').value) }); });
     el('set-voice').addEventListener('change', function () { pushSettings({ voice: el('set-voice').value }); });
-    ['rc-start', 'rc-pause', 'rc-resume', 'rc-back', 'rc-quit'].forEach(function (id) {
+    ['rc-start', 'rc-pause', 'rc-resume', 'rc-back', 'rc-quit',
+     'rc-nav-up', 'rc-nav-down', 'rc-nav-left', 'rc-nav-right', 'rc-nav-ok'].forEach(function (id) {
       var btn = el(id);
       if (btn) btn.addEventListener('click', function () { sendCommand(btn.getAttribute('data-cmd')); });
     });

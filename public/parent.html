@@ -47,6 +47,16 @@
     .remote-grid .btn { padding: .8rem .6rem; font-size: 1rem; }
     .remote-grid .remote-wide { grid-column: 1 / -1; }
     .prog-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+    .dpad-hint { margin-top: .9rem; text-align: center; }
+    .dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; max-width: 240px;
+      margin: .4rem auto 0; }
+    .dpad .btn { padding: 1rem .4rem; font-size: 1.2rem; line-height: 1; }
+    .dpad-up    { grid-column: 2; grid-row: 1; }
+    .dpad-left  { grid-column: 1; grid-row: 2; }
+    .dpad-ok    { grid-column: 2; grid-row: 2; font-size: 1rem; }
+    .dpad-right { grid-column: 3; grid-row: 2; }
+    .dpad-down  { grid-column: 2; grid-row: 3; }
     @media (max-width: 380px) { .remote-grid { grid-template-columns: 1fr; } }
 
     .stat-row { display: flex; gap: 1.25rem; margin-top: .5rem; }
@@ -202,6 +212,18 @@
           <button type="button" id="rc-resume" class="btn btn-primary" data-cmd="resume" data-i18n="remoteResume">▶ Resume</button>
           <button type="button" id="rc-back" class="btn btn-ghost" data-cmd="back" data-i18n="remoteBack">← Back</button>
           <button type="button" id="rc-quit" class="btn btn-ghost danger" data-cmd="quit" data-i18n="remoteQuit">■ Quit to menu</button>
+        </div>
+
+        <!-- D-pad: drives the TV's on-screen focus (nav.js) so the parent can move to and
+             activate ANY control on any screen (e.g. the progress report's Player dropdown,
+             Instructions, Delete, Sign out). -->
+        <p class="muted small dpad-hint" data-i18n="remoteNavHint">Move around the TV and press OK to select.</p>
+        <div class="dpad" role="group" data-i18n-aria-label="remoteDpad" aria-label="Directional pad">
+          <button type="button" id="rc-nav-up"    class="btn btn-ghost dpad-up"    data-cmd="nav_up"    data-i18n-aria-label="navUp"    aria-label="Up">▲</button>
+          <button type="button" id="rc-nav-left"  class="btn btn-ghost dpad-left"  data-cmd="nav_left"  data-i18n-aria-label="navLeft"  aria-label="Left">◀</button>
+          <button type="button" id="rc-nav-ok"    class="btn btn-primary dpad-ok"  data-cmd="nav_ok"    data-i18n="navOk" data-i18n-aria-label="navOk" aria-label="OK / Select">OK</button>
+          <button type="button" id="rc-nav-right" class="btn btn-ghost dpad-right" data-cmd="nav_right" data-i18n-aria-label="navRight" aria-label="Right">▶</button>
+          <button type="button" id="rc-nav-down"  class="btn btn-ghost dpad-down"  data-cmd="nav_down"  data-i18n-aria-label="navDown"  aria-label="Down">▼</button>
         </div>
         <p id="rc-msg" class="auth-msg" role="status" aria-live="polite"></p>
       </section>
