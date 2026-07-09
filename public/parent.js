@@ -55,6 +55,7 @@
       statusPlaying: '▶ Playing', statusResults: 'Results', statusReport: 'Grown-ups report',
       statusOther: 'On the TV', statusPaused: 'Paused',
       known: 'Known', learning: 'Learning', seen: 'Seen', refresh: 'Refresh',
+      pLearned: 'Learned ✓', pLearning: 'Learning…',
       error: 'Something went wrong. Please try again.',
       bandYears: 'yrs',
     },
@@ -90,6 +91,7 @@
       statusPlaying: '▶ Spelar', statusResults: 'Resultat', statusReport: 'Vuxenrapport',
       statusOther: 'På TV:n', statusPaused: 'Pausad',
       known: 'Kan', learning: 'Lär sig', seen: 'Sett', refresh: 'Uppdatera',
+      pLearned: 'Lärt sig ✓', pLearning: 'Lär sig…',
       error: 'Något gick fel. Försök igen.',
       bandYears: 'år',
     },
@@ -125,6 +127,7 @@
       statusPlaying: '▶ Jugando', statusResults: 'Resultados', statusReport: 'Informe para adultos',
       statusOther: 'En la TV', statusPaused: 'En pausa',
       known: 'Sabe', learning: 'Aprendiendo', seen: 'Visto', refresh: 'Actualizar',
+      pLearned: 'Aprendido ✓', pLearning: 'Aprendiendo…',
       error: 'Algo salió mal. Inténtalo de nuevo.',
       bandYears: 'años',
     },
@@ -160,6 +163,7 @@
       statusPlaying: '▶ Spielt', statusResults: 'Ergebnisse', statusReport: 'Bericht für Erwachsene',
       statusOther: 'Am Fernseher', statusPaused: 'Pausiert',
       known: 'Kann', learning: 'Lernt', seen: 'Gesehen', refresh: 'Aktualisieren',
+      pLearned: 'Gelernt ✓', pLearning: 'Am Lernen',
       error: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
       bandYears: 'J.',
     },
@@ -422,14 +426,16 @@
   }
   function openForm(child) {
     editingId = child ? child.id : null;
-    el('form-title').textContent = child ? t('editChild') : t('addChild');
-    el('cf-name').value = child ? (child.nickname || '') : '';
-    renderAvatarPicker(child ? child.avatar : null);
-    fillBandSelect(el('cf-band'), child ? child.age_band : '4-5');
-    fillLangSelect(el('cf-l1'), child ? child.l1 : lang);
-    fillLangSelect(el('cf-target'), child ? child.target : (lang === 'en' ? 'de' : 'en'));
-    el('child-form').hidden = false;
-    try { el('cf-name').focus(); } catch (e) {}
+    // Populate the three dropdowns FIRST and guard every step, so a hiccup in any one
+    // (e.g. avatar rendering) can never leave the form showing with empty/blank selects.
+    try { fillBandSelect(el('cf-band'), child ? child.age_band : '4-5'); } catch (e) { /* ignore */ }
+    try { fillLangSelect(el('cf-l1'), child ? child.l1 : lang); } catch (e) { /* ignore */ }
+    try { fillLangSelect(el('cf-target'), child ? child.target : (lang === 'en' ? 'de' : 'en')); } catch (e) { /* ignore */ }
+    var titleEl = el('form-title'); if (titleEl) titleEl.textContent = child ? t('editChild') : t('addChild');
+    var nameEl = el('cf-name'); if (nameEl) nameEl.value = child ? (child.nickname || '') : '';
+    try { renderAvatarPicker(child ? child.avatar : null); } catch (e) { /* ignore */ }
+    var form = el('child-form'); if (form) form.hidden = false;
+    try { el('cf-name').focus(); } catch (e) { /* ignore */ }
   }
   function closeForm() { el('child-form').hidden = true; editingId = null; }
   function startEdit(id) {
@@ -499,6 +505,7 @@
         setPlayMsg(t('sent'), 'ok');
         renderChildren();
         renderCategories();
+        renderProgress();   // selected child may have changed → refresh the per-category report
       }, function (err) { setPlayMsg((err && err.message) || t('error'), 'error'); });
   }
 
@@ -596,37 +603,56 @@
   }
 
   // ── Progress (read learning_events for the active child) ──
+  // Per-category breakdown that mirrors the on-TV Framstegsrapport: for each category the
+  // child has touched, the Learned / Learning counts + the word lists — derived from the
+  // SAME word_state the box writes into learning_events (mastered/known → Learned, else →
+  // Learning; latest event per word wins). "Coming soon" is box-only (needs the syllabus +
+  // the child's band), so it isn't shown here. Read-only; re-runs on child change.
+  var lastProgressChild = null;
   function renderProgress() {
     var host = el('progress-body');
     if (!host) return;
     if (!sb || !selectedChildId) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
+    var forChild = selectedChildId;
+    lastProgressChild = forChild;
     host.innerHTML = '<p class="muted">…</p>';
     sb.from('learning_events')
       .select('word, category, correct, word_state, occurred_at')
-      .eq('child_id', selectedChildId)
+      .eq('child_id', forChild)
       .order('occurred_at', { ascending: false })
-      .limit(200)
+      .limit(1000)
       .then(function (res) {
+        if (forChild !== lastProgressChild) return;   // child changed mid-flight; a newer render owns the view
         if (res && res.error) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
         var rows = (res && res.data) || [];
         if (!rows.length) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
-        var states = {};   // latest word_state per word
-        var seen = {};
+        // Latest word_state per (category, word) — rows are newest-first, so first wins.
+        var byCat = {}, seenKey = {};
         rows.forEach(function (r) {
-          seen[r.word] = true;
-          if (states[r.word] === undefined) states[r.word] = r.word_state; // first = latest (desc order)
+          var cat = r.category || 'other', key = cat + ':' + r.word;
+          if (seenKey[key]) return;
+          seenKey[key] = true;
+          var c = (byCat[cat] = byCat[cat] || { learned: [], learning: [] });
+          if (r.word_state === 'mastered' || r.word_state === 'known') c.learned.push(r.word);
+          else c.learning.push(r.word);
         });
-        var known = 0, learning = 0;
-        Object.keys(states).forEach(function (w) {
-          if (states[w] === 'known' || states[w] === 'mastered') known++;
-          else learning++;
-        });
-        host.innerHTML =
-          '<div class="stat-row">' +
-            '<div class="stat"><div class="stat-n">' + known + '</div><div class="stat-l muted">' + esc(t('known')) + '</div></div>' +
-            '<div class="stat"><div class="stat-n">' + learning + '</div><div class="stat-l muted">' + esc(t('learning')) + '</div></div>' +
-            '<div class="stat"><div class="stat-n">' + Object.keys(seen).length + '</div><div class="stat-l muted">' + esc(t('seen')) + '</div></div>' +
-          '</div>';
+        var wordList = function (label, words, cls) {
+          if (!words.length) return '';
+          return '<p class="prog-list ' + cls + '"><strong>' + esc(t(label)) + ':</strong> ' +
+            words.map(esc).join(', ') + '</p>';
+        };
+        host.innerHTML = Object.keys(byCat).sort().map(function (cat) {
+          var c = byCat[cat];
+          return '<div class="prog-cat">' +
+              '<h3>' + esc(catTitle(cat)) + '</h3>' +
+              '<div class="prog-bars">' +
+                '<span class="pbadge pb-learned">' + esc(t('pLearned')) + ': ' + c.learned.length + '</span>' +
+                '<span class="pbadge pb-learning">' + esc(t('pLearning')) + ': ' + c.learning.length + '</span>' +
+              '</div>' +
+              wordList('pLearning', c.learning, 'plist-learning') +
+              wordList('pLearned', c.learned, 'plist-learned') +
+            '</div>';
+        }).join('');
       });
   }
 
@@ -728,27 +754,30 @@
   }
 
   // ── boot ──
+  // Guarded event binding: a single missing element must NEVER throw and abort the rest
+  // of boot() (which would leave later controls — e.g. the add-child form — unwired).
+  function on(id, evt, fn) { var n = el(id); if (n) n.addEventListener(evt, fn); }
+
   function boot() {
-    el('lang-select').addEventListener('change', function (e) {
+    on('lang-select', 'change', function (e) {
       lang = e.target.value;
       try { localStorage.setItem(LANG_KEY, lang); } catch (err) { /* ignore */ }
       applyChrome();
       renderChildren(); renderCategories(); renderSettings(); renderTvStatus(); renderProgress();
     });
-    el('add-child-btn').addEventListener('click', function () { openForm(null); });
-    el('cf-cancel').addEventListener('click', closeForm);
-    el('child-form').addEventListener('submit', saveChild);
-    el('play-lang').addEventListener('change', function () { pushState({ language: el('play-lang').value }); });
-    el('set-session').addEventListener('change', function () { pushSettings({ session_minutes: Number(el('set-session').value) }); });
-    el('set-voice').addEventListener('change', function () { pushSettings({ voice: el('set-voice').value }); });
+    on('add-child-btn', 'click', function () { openForm(null); });
+    on('cf-cancel', 'click', closeForm);
+    on('child-form', 'submit', saveChild);
+    on('play-lang', 'change', function () { pushState({ language: el('play-lang').value }); });
+    on('set-session', 'change', function () { pushSettings({ session_minutes: Number(el('set-session').value) }); });
+    on('set-voice', 'change', function () { pushSettings({ voice: el('set-voice').value }); });
     ['rc-start', 'rc-pause', 'rc-resume', 'rc-back', 'rc-quit',
      'rc-nav-up', 'rc-nav-down', 'rc-nav-left', 'rc-nav-right', 'rc-nav-ok'].forEach(function (id) {
       var btn = el(id);
       if (btn) btn.addEventListener('click', function () { sendCommand(btn.getAttribute('data-cmd')); });
     });
-    var progBtn = el('rc-progress');
-    if (progBtn) progBtn.addEventListener('click', function () { sendCommand('progress_report', 'prog-cmd-msg'); });
-    el('progress-refresh').addEventListener('click', renderProgress);
+    on('rc-progress', 'click', function () { sendCommand('progress_report', 'prog-cmd-msg'); });
+    on('progress-refresh', 'click', renderProgress);
 
     fillLangSelect(el('play-lang'), 'en');
     applyChrome();

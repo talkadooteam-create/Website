@@ -62,6 +62,18 @@
     .dpad-down  { grid-column: 2; grid-row: 3; }
     @media (max-width: 380px) { .remote-grid { grid-template-columns: 1fr; } }
 
+    /* Per-category progress breakdown (mirrors the on-TV report) */
+    .prog-cat { background: #f7f8fa; border-radius: 14px; padding: .6rem .8rem; margin: .6rem 0; }
+    .prog-cat h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+    .prog-bars { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .pbadge { border-radius: 999px; padding: .15rem .6rem; font-size: .82rem; font-weight: 700; color: #14213d; }
+    .pb-learned { background: #a5d6a7; }
+    .pb-learning { background: #ffe082; }
+    .prog-list { margin: .4rem 0 0; font-size: .9rem; padding: .3rem .55rem; border-radius: 8px;
+      border-left: 4px solid #ccc; background: #fff; }
+    .plist-learned { border-left-color: #66bb6a; }
+    .plist-learning { border-left-color: #ffca28; }
+
     .stat-row { display: flex; gap: 1.25rem; margin-top: .5rem; }
     .stat-n { font-size: 1.6rem; font-weight: 800; color: #e6397e; }
     .stat-l { font-size: .8rem; }
