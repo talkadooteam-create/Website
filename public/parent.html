@@ -45,6 +45,8 @@
 
     .remote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .75rem; }
     .remote-grid .btn { padding: .8rem .6rem; font-size: 1rem; }
+    .remote-grid .remote-wide { grid-column: 1 / -1; }
+    .prog-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
     @media (max-width: 380px) { .remote-grid { grid-template-columns: 1fr; } }
 
     .stat-row { display: flex; gap: 1.25rem; margin-top: .5rem; }
@@ -195,6 +197,7 @@
         <h2 data-i18n="remoteTitle">Remote</h2>
         <p class="muted small" data-i18n="remoteHint">Control the TV like a remote.</p>
         <div class="remote-grid">
+          <button type="button" id="rc-start" class="btn btn-primary remote-wide" data-cmd="start" data-i18n="remoteStart">▶ Let's go</button>
           <button type="button" id="rc-pause" class="btn btn-primary" data-cmd="pause" data-i18n="remotePause">⏸ Pause</button>
           <button type="button" id="rc-resume" class="btn btn-primary" data-cmd="resume" data-i18n="remoteResume">▶ Resume</button>
           <button type="button" id="rc-back" class="btn btn-ghost" data-cmd="back" data-i18n="remoteBack">← Back</button>
@@ -207,9 +210,13 @@
       <section class="auth-panel card dash-section">
         <div class="row-between">
           <h2 data-i18n="progressTitle">Progress</h2>
-          <button type="button" id="progress-refresh" class="btn btn-ghost btn-sm" data-i18n="refresh">Refresh</button>
+          <div class="prog-actions">
+            <button type="button" id="rc-progress" class="btn btn-primary btn-sm" data-cmd="progress_report" data-i18n="progressOnTv">📺 Full report on TV</button>
+            <button type="button" id="progress-refresh" class="btn btn-ghost btn-sm" data-i18n="refresh">Refresh</button>
+          </div>
         </div>
         <p class="muted small" data-i18n="progressHint">A summary for grown-ups.</p>
+        <p id="prog-cmd-msg" class="auth-msg" role="status" aria-live="polite"></p>
         <div id="progress-body"></div>
       </section>
 

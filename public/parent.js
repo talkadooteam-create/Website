@@ -45,8 +45,9 @@
       voiceLabel: 'Instruction voice', voiceRecorded: 'Alexandra (recorded)', voiceAuto: 'Auto friendly voice',
       settingsSaved: 'Saved ✓',
       remoteTitle: 'Remote', remoteHint: 'Control the TV like a remote.',
-      remotePause: '⏸ Pause', remoteResume: '▶ Resume', remoteBack: '← Back', remoteQuit: '■ Quit to menu',
+      remoteStart: "▶ Let's go", remotePause: '⏸ Pause', remoteResume: '▶ Resume', remoteBack: '← Back', remoteQuit: '■ Quit to menu',
       progressTitle: 'Progress', progressHint: 'A summary for grown-ups.', progressNone: 'No progress recorded yet.',
+      progressOnTv: '📺 Full report on TV',
       known: 'Known', learning: 'Learning', seen: 'Seen', refresh: 'Refresh',
       error: 'Something went wrong. Please try again.',
       bandYears: 'yrs',
@@ -73,8 +74,9 @@
       voiceLabel: 'Röst för instruktioner', voiceRecorded: 'Evelina (inspelad)', voiceAuto: 'Automatisk vänlig röst',
       settingsSaved: 'Sparat ✓',
       remoteTitle: 'Fjärrkontroll', remoteHint: 'Styr TV:n som en fjärrkontroll.',
-      remotePause: '⏸ Pausa', remoteResume: '▶ Fortsätt', remoteBack: '← Tillbaka', remoteQuit: '■ Avsluta till menyn',
+      remoteStart: '▶ Nu kör vi', remotePause: '⏸ Pausa', remoteResume: '▶ Fortsätt', remoteBack: '← Tillbaka', remoteQuit: '■ Avsluta till menyn',
       progressTitle: 'Framsteg', progressHint: 'En sammanfattning för vuxna.', progressNone: 'Inga framsteg registrerade ännu.',
+      progressOnTv: '📺 Fullständig rapport på TV:n',
       known: 'Kan', learning: 'Lär sig', seen: 'Sett', refresh: 'Uppdatera',
       error: 'Något gick fel. Försök igen.',
       bandYears: 'år',
@@ -101,8 +103,9 @@
       voiceLabel: 'Voz de instrucciones', voiceRecorded: 'Sandra (grabada)', voiceAuto: 'Voz amable automática',
       settingsSaved: 'Guardado ✓',
       remoteTitle: 'Mando', remoteHint: 'Controla la TV como un mando.',
-      remotePause: '⏸ Pausar', remoteResume: '▶ Reanudar', remoteBack: '← Atrás', remoteQuit: '■ Salir al menú',
+      remoteStart: '▶ ¡Vamos!', remotePause: '⏸ Pausar', remoteResume: '▶ Reanudar', remoteBack: '← Atrás', remoteQuit: '■ Salir al menú',
       progressTitle: 'Progreso', progressHint: 'Un resumen para adultos.', progressNone: 'Aún no hay progreso registrado.',
+      progressOnTv: '📺 Informe completo en la TV',
       known: 'Sabe', learning: 'Aprendiendo', seen: 'Visto', refresh: 'Actualizar',
       error: 'Algo salió mal. Inténtalo de nuevo.',
       bandYears: 'años',
@@ -129,8 +132,9 @@
       voiceLabel: 'Stimme für Anweisungen', voiceRecorded: 'Katja (aufgenommen)', voiceAuto: 'Automatische freundliche Stimme',
       settingsSaved: 'Gespeichert ✓',
       remoteTitle: 'Fernbedienung', remoteHint: 'Steuere den Fernseher wie eine Fernbedienung.',
-      remotePause: '⏸ Pause', remoteResume: '▶ Weiter', remoteBack: '← Zurück', remoteQuit: '■ Zum Menü beenden',
+      remoteStart: "▶ Los geht's", remotePause: '⏸ Pause', remoteResume: '▶ Weiter', remoteBack: '← Zurück', remoteQuit: '■ Zum Menü beenden',
       progressTitle: 'Fortschritt', progressHint: 'Eine Zusammenfassung für Erwachsene.', progressNone: 'Noch kein Fortschritt erfasst.',
+      progressOnTv: '📺 Vollständiger Bericht am TV',
       known: 'Kann', learning: 'Lernt', seen: 'Gesehen', refresh: 'Aktualisieren',
       error: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
       bandYears: 'J.',
@@ -535,7 +539,10 @@
   function newNonce() {
     return 'n_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
   }
-  function sendCommand(command) {
+  // msgId lets a command outside the Remote section report status in its own line
+  // (e.g. the Progress-section "Full report on TV" button uses 'prog-cmd-msg').
+  function sendCommand(command, msgId) {
+    msgId = msgId || 'rc-msg';
     if (!sb || !currentUser) return;
     var row = {
       parent_id: currentUser.id,
@@ -543,12 +550,12 @@
       nonce: newNonce(),
       issued_at: new Date().toISOString(),
     };
-    setMsgOn('rc-msg', t('sending'));
+    setMsgOn(msgId, t('sending'));
     sb.from('box_command').upsert(row, { onConflict: 'parent_id' })
       .then(function (res) {
-        if (res && res.error) { setMsgOn('rc-msg', res.error.message || t('error'), 'error'); return; }
-        setMsgOn('rc-msg', t('sent'), 'ok');
-      }, function (err) { setMsgOn('rc-msg', (err && err.message) || t('error'), 'error'); });
+        if (res && res.error) { setMsgOn(msgId, res.error.message || t('error'), 'error'); return; }
+        setMsgOn(msgId, t('sent'), 'ok');
+      }, function (err) { setMsgOn(msgId, (err && err.message) || t('error'), 'error'); });
   }
 
   // ── Progress (read learning_events for the active child) ──
@@ -650,10 +657,12 @@
     el('play-lang').addEventListener('change', function () { pushState({ language: el('play-lang').value }); });
     el('set-session').addEventListener('change', function () { pushSettings({ session_minutes: Number(el('set-session').value) }); });
     el('set-voice').addEventListener('change', function () { pushSettings({ voice: el('set-voice').value }); });
-    ['rc-pause', 'rc-resume', 'rc-back', 'rc-quit'].forEach(function (id) {
+    ['rc-start', 'rc-pause', 'rc-resume', 'rc-back', 'rc-quit'].forEach(function (id) {
       var btn = el(id);
       if (btn) btn.addEventListener('click', function () { sendCommand(btn.getAttribute('data-cmd')); });
     });
+    var progBtn = el('rc-progress');
+    if (progBtn) progBtn.addEventListener('click', function () { sendCommand('progress_report', 'prog-cmd-msg'); });
     el('progress-refresh').addEventListener('click', renderProgress);
 
     fillLangSelect(el('play-lang'), 'en');
