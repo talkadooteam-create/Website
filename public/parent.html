@@ -163,21 +163,53 @@
               <span data-i18n="nickname">First name / nickname</span>
               <input id="cf-name" type="text" maxlength="40" autocomplete="off" />
             </label>
+            <!-- Options are also present statically so the form is fully usable even if the
+                 script hasn't populated them yet (cache/partial-load); parent.js re-fills
+                 them to localise labels + mark the selection. -->
             <label class="field">
               <span data-i18n="ageBand">Age</span>
-              <select id="cf-band"></select>
+              <select id="cf-band">
+                <option value="4-5">4-5</option>
+                <option value="5-6">5-6</option>
+                <option value="6-7">6-7</option>
+              </select>
             </label>
             <label class="field">
               <span data-i18n="l1">Home language</span>
-              <select id="cf-l1"></select>
+              <select id="cf-l1">
+                <option value="en">English</option>
+                <option value="sv">Svenska</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+              </select>
             </label>
             <label class="field">
               <span data-i18n="target">Learning</span>
-              <select id="cf-target"></select>
+              <select id="cf-target">
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+                <option value="sv">Svenska</option>
+                <option value="es">Español</option>
+              </select>
             </label>
             <div class="field full">
               <span data-i18n="avatarLabel">Pick an avatar</span>
-              <div id="avatar-picker" class="avatar-picker"></div>
+              <div id="avatar-picker" class="avatar-picker">
+                <button type="button" class="avatar-chip selected" data-avatar="🐰">🐰</button>
+                <button type="button" class="avatar-chip" data-avatar="🐱">🐱</button>
+                <button type="button" class="avatar-chip" data-avatar="🐶">🐶</button>
+                <button type="button" class="avatar-chip" data-avatar="🦊">🦊</button>
+                <button type="button" class="avatar-chip" data-avatar="🐻">🐻</button>
+                <button type="button" class="avatar-chip" data-avatar="🐼">🐼</button>
+                <button type="button" class="avatar-chip" data-avatar="🦁">🦁</button>
+                <button type="button" class="avatar-chip" data-avatar="🐨">🐨</button>
+                <button type="button" class="avatar-chip" data-avatar="🐸">🐸</button>
+                <button type="button" class="avatar-chip" data-avatar="🦄">🦄</button>
+                <button type="button" class="avatar-chip" data-avatar="🐯">🐯</button>
+                <button type="button" class="avatar-chip" data-avatar="🐧">🐧</button>
+                <button type="button" class="avatar-chip" data-avatar="🐷">🐷</button>
+                <button type="button" class="avatar-chip" data-avatar="🐵">🐵</button>
+              </div>
             </div>
           </div>
           <div class="auth-actions">

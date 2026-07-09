@@ -398,6 +398,9 @@
   }
 
   // ── Add / edit child form ──
+  // Re-render the avatar chips (localised nothing — just marks `selected`). The HTML also
+  // ships these chips statically, so the picker is never empty even if this doesn't run;
+  // clicks are handled by a delegated listener in boot(), not per-chip here.
   function renderAvatarPicker(selected) {
     var host = el('avatar-picker');
     if (!host) return;
@@ -405,12 +408,6 @@
       var on = selected ? a === selected : i === 0;
       return '<button type="button" class="avatar-chip' + (on ? ' selected' : '') + '" data-avatar="' + a + '">' + a + '</button>';
     }).join('');
-    host.querySelectorAll('.avatar-chip').forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        host.querySelectorAll('.avatar-chip').forEach(function (c) { c.classList.remove('selected'); });
-        chip.classList.add('selected');
-      });
-    });
   }
   function fillLangSelect(sel, selected) {
     if (!sel) return;
@@ -768,6 +765,15 @@
     on('add-child-btn', 'click', function () { openForm(null); });
     on('cf-cancel', 'click', closeForm);
     on('child-form', 'submit', saveChild);
+    // Delegated avatar selection — works for the STATIC chips in the HTML and for any the
+    // script re-renders, so picking an avatar never depends on renderAvatarPicker running.
+    on('avatar-picker', 'click', function (e) {
+      var chip = e.target && e.target.closest ? e.target.closest('.avatar-chip') : null;
+      if (!chip) return;
+      var host = el('avatar-picker'); if (!host) return;
+      host.querySelectorAll('.avatar-chip').forEach(function (c) { c.classList.remove('selected'); });
+      chip.classList.add('selected');
+    });
     on('play-lang', 'change', function () { pushState({ language: el('play-lang').value }); });
     on('set-session', 'change', function () { pushSettings({ session_minutes: Number(el('set-session').value) }); });
     on('set-voice', 'change', function () { pushSettings({ voice: el('set-voice').value }); });
