@@ -619,11 +619,10 @@
       .order('occurred_at', { ascending: false })
       .limit(1000)
       .then(function (res) {
-        if (forChild !== lastProgressChild) return;   // child changed mid-flight; a newer render owns the view
+        if (forChild !== lastProgressChild) return;
         if (res && res.error) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
         var rows = (res && res.data) || [];
         if (!rows.length) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
-        // Latest word_state per (category, word) — rows are newest-first, so first wins.
         var byCat = {}, seenKey = {};
         rows.forEach(function (r) {
           var cat = r.category || 'other', key = cat + ':' + r.word;
