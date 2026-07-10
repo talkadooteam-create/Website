@@ -599,12 +599,15 @@
       }, function (err) { setMsgOn(msgId, (err && err.message) || t('error'), 'error'); });
   }
 
-  // ── Progress (read learning_events for the active child) ──
-  // Per-category breakdown that mirrors the on-TV Framstegsrapport: for each category the
-  // child has touched, the Learned / Learning counts + the word lists — derived from the
-  // SAME word_state the box writes into learning_events (mastered/known → Learned, else →
-  // Learning; latest event per word wins). "Coming soon" is box-only (needs the syllabus +
-  // the child's band), so it isn't shown here. Read-only; re-runs on child change.
+  // ── Progress (read the LIVE Leitner review store for the active child) ──
+  // Per-category breakdown that mirrors the on-TV Framstegsrapport, from the SAME
+  // continuously-saved source the box updates on every answer: the `review` row
+  // ({ child_id, data }), where data is keyed "<category>:<word>" → { box, seen,
+  // correct, struggle, cleanDays:[] }. Classification is game.js's own isWordMastered
+  // ((box||0)>=4 && (cleanDays||[]).length>=3 → Learned; any other existing record →
+  // Learning) — no new thresholds. RLS review_own scopes the read to the parent's
+  // children. Re-runs on child change and on Refresh; note `review` isn't in the
+  // realtime publication, so per-answer push would need a migration (Refresh re-reads).
   var lastProgressChild = null;
   function renderProgress() {
     var host = el('progress-body');
@@ -613,25 +616,28 @@
     var forChild = selectedChildId;
     lastProgressChild = forChild;
     host.innerHTML = '<p class="muted">…</p>';
-    sb.from('learning_events')
-      .select('word, category, correct, word_state, occurred_at')
+    sb.from('review')
+      .select('data')
       .eq('child_id', forChild)
-      .order('occurred_at', { ascending: false })
-      .limit(1000)
+      .maybeSingle()
       .then(function (res) {
         if (forChild !== lastProgressChild) return;
         if (res && res.error) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
-        var rows = (res && res.data) || [];
-        if (!rows.length) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
-        var byCat = {}, seenKey = {};
-        rows.forEach(function (r) {
-          var cat = r.category || 'other', key = cat + ':' + r.word;
-          if (seenKey[key]) return;
-          seenKey[key] = true;
+        var store = res && res.data && res.data.data;
+        if (!store || typeof store !== 'object') { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
+        var byCat = {};
+        Object.keys(store).forEach(function (id) {
+          var sep = id.indexOf(':');            // split on the FIRST colon → category / word
+          if (sep < 0) return;
+          var cat = id.slice(0, sep), word = id.slice(sep + 1);
+          var rec = store[id];
+          if (!rec || typeof rec !== 'object') return;
           var c = (byCat[cat] = byCat[cat] || { learned: [], learning: [] });
-          if (r.word_state === 'mastered' || r.word_state === 'known') c.learned.push(r.word);
-          else c.learning.push(r.word);
+          // isWordMastered (game.js): box>=4 AND cleaned on >=3 distinct days.
+          if (((rec.box || 0) >= 4) && (((rec.cleanDays || []).length) >= 3)) c.learned.push(word);
+          else c.learning.push(word);
         });
+        if (!Object.keys(byCat).length) { host.innerHTML = '<p class="muted">' + esc(t('progressNone')) + '</p>'; return; }
         var wordList = function (label, words, cls) {
           if (!words.length) return '';
           return '<p class="prog-list ' + cls + '"><strong>' + esc(t(label)) + ':</strong> ' +
