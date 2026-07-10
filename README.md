@@ -1,5 +1,20 @@
 # React + TypeScript + Vite
 
+> ## ⚠️ Deploying the parent/store pages — bump the cache-busting version
+>
+> The parent app lives in `public/parent.js` + `public/parent.html` (a manual copy of
+> `Talkadoo-Data/store/`). `public/parent.html` loads the script with a pinned version query:
+>
+> ```html
+> <script src="parent.js?v=20260710"></script>
+> ```
+>
+> **Whenever you change `public/parent.js`, bump that `?v=` number** (e.g. `?v=20260711`) in
+> `public/parent.html` in the same commit. Otherwise browsers and Vercel's per-POP edge caches
+> keep serving the old `parent.js` under the old URL, and the change won't go live even after a
+> successful deploy. The version query gives the new file a brand-new URL that no cache can serve
+> stale. Use the deploy date (`YYYYMMDD`) as the value.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
